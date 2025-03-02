@@ -32,10 +32,11 @@ class GameController:
         if top_left_row + piece_rows > self.game_board.rows or top_left_col + piece_cols > self.game_board.cols:
             return False
 
-        # Check for overlapping filled cells
+        # Check for overlapping filled cells or diamonds
         for r in range(piece_rows):
             for c in range(piece_cols):
-                if piece[r][c] == 1 and self.game_board.board[top_left_row + r][top_left_col + c] == 1:
+                if piece[r][c] == 1 and (self.game_board.board[top_left_row + r][top_left_col + c] == 1 or
+                                         self.game_board.board[top_left_row + r][top_left_col + c] == 2):
                     return False
         return True
 
@@ -52,72 +53,50 @@ class GameController:
         return True
 
     def clear_completed_lines(self):
-        """
-        Clears completed rows and columns, calculating the score based on diamonds.
-        """
-        lines_cleared = 0
+        """Clears completed rows and columns, calculating the score based on diamonds."""
+        rows_cleared, diamond_score_rows = self._clear_rows()
+        cols_cleared, diamond_score_cols = self._clear_cols()
+        total_lines_cleared = rows_cleared + cols_cleared
+        total_diamond_score = diamond_score_rows + diamond_score_cols
+        self.score += (total_lines_cleared * 10) + total_diamond_score
+        return total_lines_cleared
+
+    def _clear_rows(self):
+        """Clears completed rows and calculates diamond score."""
+        rows_to_clear = [r for r in range(self.game_board.rows) if all(cell == 1 or cell == 2 for cell in self.game_board.board[r])]
         diamond_score = 0
-        rows_to_clear = [r for r in range(len(self.game_board.board)) if
-                         all(cell == 1 or cell == 2 for cell in self.game_board.board[r])]
-        cols_to_clear = [c for c in range(len(self.game_board.board[0])) if all(
-            self.game_board.board[r][c] == 1 or self.game_board.board[r][c] == 2 for r in
-            range(len(self.game_board.board)))]
-
         for r in rows_to_clear:
-            diamond_score += self.game_board.board[r].count(2) * 10  # Count diamonds in the row
-            self.game_board.board[r] = [0] * len(self.game_board.board[0])
-            lines_cleared += 1
+            diamond_score += self.game_board.board[r].count(2) * 10
+            self.game_board.board[r] = [0] * self.game_board.cols
+        return len(rows_to_clear), diamond_score
 
+    def _clear_cols(self):
+        """Clears completed columns and calculates diamond score."""
+        cols_to_clear = [c for c in range(self.game_board.cols) if all(self.game_board.board[r][c] == 1 or self.game_board.board[r][c] == 2 for r in range(self.game_board.rows))]
+        diamond_score = 0
         for c in cols_to_clear:
-            diamond_score += sum(1 for r in range(len(self.game_board.board)) if
-                                 self.game_board.board[r][c] == 2) * 10  # Count diamonds in the column
-            for r in range(len(self.game_board.board)):
+            diamond_score += sum(1 for r in range(self.game_board.rows) if self.game_board.board[r][c] == 2) * 10
+            for r in range(self.game_board.rows):
                 self.game_board.board[r][c] = 0
-            lines_cleared += 1
-
-        self.score += (lines_cleared * 10) + diamond_score  # Update total score
-        return lines_cleared
+        return len(cols_to_clear), diamond_score
 
     def is_game_over(self):
-        """
-        Checks if the game is over.
-        Returns:
-            str: "victory" if all pieces have been placed,
-                 "defeat" if none of the remaining pieces can be placed on the board,
-                 None if the game is still in progress.
-        """
-        # Victory condition: no remaining pieces in the sequence
+        """Checks if the game is over."""
         if not self.piece_sequence.sequence:
             return "victory"
+        if self._is_defeat():
+            return "defeat"
+        return None
 
-        # Defeat condition: check if any remaining piece can be placed anywhere on the board.
-        for (piece_name, piece) in self.piece_sequence.sequence:
-            piece_rows = len(piece)
-            piece_cols = len(piece[0])
-            # Iterate over all possible top-left positions where the piece could fit
+    def _is_defeat(self):
+        """Checks if the game is lost."""
+        for _, piece in self.piece_sequence.sequence:
+            piece_rows, piece_cols = len(piece), len(piece[0])
             for r in range(self.game_board.rows - piece_rows + 1):
                 for c in range(self.game_board.cols - piece_cols + 1):
                     if self.can_place_piece(piece, r, c):
-                        return None  # A valid move exists, game is not over
-        # If no valid placement is found for any piece, it's a defeat.
-        return "defeat"
-
-    def play_next_piece(self, top_left_row, top_left_col):
-        """
-        Retrieves the next piece from the sequence and attempts to place it at the specified position.
-
-        Args:
-            top_left_row (int): The top row index for the piece placement.
-            top_left_col (int): The left column index for the piece placement.
-
-        Returns:
-            bool: True if the piece was placed successfully, False otherwise.
-        """
-        piece_name, piece = self.piece_sequence.get_next_piece()
-        if self.place_piece(piece, top_left_row, top_left_col):
-            return True
-        else:
-            return False
+                        return False  # Found a valid move
+        return True  # No valid moves found
 
     def manual_play(self, row, col):
         piece_name, piece = self.piece_sequence.peek_next_piece()
