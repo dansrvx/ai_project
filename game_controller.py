@@ -1,6 +1,7 @@
 import copy
 from game_state import GameState
 
+
 class GameController:
     def __init__(self, game_board, piece_sequence, search_algorithm):
         self.game_board = game_board
@@ -20,7 +21,7 @@ class GameController:
             return True
         else:
             return False
-        
+
     def can_place_piece(self, piece, top_left_row, top_left_col):
         piece_rows = len(piece)
         piece_cols = len(piece[0])
@@ -36,7 +37,7 @@ class GameController:
             for c in range(piece_cols):
                 if piece[r][c] == 1 and self.game_board.board[top_left_row + r][top_left_col + c] == 1:
                     return False
-        return True        
+        return True
 
     def place_piece(self, piece, top_left_row, top_left_col):
         if not self.can_place_piece(piece, top_left_row, top_left_col):
@@ -47,25 +48,34 @@ class GameController:
             for c in range(piece_cols):
                 if piece[r][c] == 1:
                     self.game_board.board[top_left_row + r][top_left_col + c] = 1
-        lines_cleared = self.clear_completed_lines()
-        self.score += lines_cleared * 10
+        self.clear_completed_lines()
         return True
-    
 
     def clear_completed_lines(self):
+        """
+        Clears completed rows and columns, calculating the score based on diamonds.
+        """
         lines_cleared = 0
-        rows_to_clear = [r for r in range(len(self.game_board.board)) if all(cell == 1 for cell in self.game_board.board[r])]
-        cols_to_clear = [c for c in range(len(self.game_board.board[0])) if all(self.game_board.board[r][c] == 1 for r in range(len(self.game_board.board)))]
+        diamond_score = 0
+        rows_to_clear = [r for r in range(len(self.game_board.board)) if
+                         all(cell == 1 or cell == 2 for cell in self.game_board.board[r])]
+        cols_to_clear = [c for c in range(len(self.game_board.board[0])) if all(
+            self.game_board.board[r][c] == 1 or self.game_board.board[r][c] == 2 for r in
+            range(len(self.game_board.board)))]
 
         for r in rows_to_clear:
+            diamond_score += self.game_board.board[r].count(2) * 10  # Count diamonds in the row
             self.game_board.board[r] = [0] * len(self.game_board.board[0])
             lines_cleared += 1
 
         for c in cols_to_clear:
+            diamond_score += sum(1 for r in range(len(self.game_board.board)) if
+                                 self.game_board.board[r][c] == 2) * 10  # Count diamonds in the column
             for r in range(len(self.game_board.board)):
                 self.game_board.board[r][c] = 0
             lines_cleared += 1
 
+        self.score += (lines_cleared * 10) + diamond_score  # Update total score
         return lines_cleared
 
     def is_game_over(self):
@@ -91,7 +101,7 @@ class GameController:
                         return None  # A valid move exists, game is not over
         # If no valid placement is found for any piece, it's a defeat.
         return "defeat"
-    
+
     def play_next_piece(self, top_left_row, top_left_col):
         """
         Retrieves the next piece from the sequence and attempts to place it at the specified position.
@@ -107,11 +117,20 @@ class GameController:
         if self.place_piece(piece, top_left_row, top_left_col):
             return True
         else:
-            return False    
+            return False
 
     def manual_play(self, row, col):
-        piece_name, piece = self.piece_sequence.get_next_piece()
+        piece_name, piece = self.piece_sequence.peek_next_piece()
+        placed_positions = []
+
         if self.place_piece(piece, row, col):
-            return True
+            piece_rows = len(piece)
+            piece_cols = len(piece[0])
+            for r in range(piece_rows):
+                for c in range(piece_cols):
+                    if piece[r][c] == 1:
+                        placed_positions.append((row + r, col + c))
+            self.piece_sequence.get_next_piece()
+            return placed_positions
         else:
-            return False        
+            return None

@@ -6,12 +6,12 @@ from game_controller import GameController
 from game_gui import GameGUI
 
 if __name__ == '__main__':
-    rows = 8
-    cols = 8
-    sequence_length = 5
+    rows = 10
+    cols = 10
+    sequence_length = 30
 
     game_board = GameBoard(rows, cols)
-    game_board.initialize_board_state(fill_density=0.3, symmetric=False, edge_clear=True, sigma=1)
+    game_board.initialize_board_state(fill_density=0.4, symmetric=True, edge_clear=True, sigma=1)
 
     piece_sequence = PieceSequence(piece_definitions, sequence_length=sequence_length)
 
