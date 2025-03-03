@@ -65,6 +65,8 @@ class GameController:
             for c in range(piece_cols):
                 if piece[r][c] == 1:
                     self.game_board.board[top_left_row + r][top_left_col + c] = 1
+                elif piece[r][c] == 2:
+                    self.game_board.board[top_left_row + r][top_left_col + c] = 2
 
         self.clear_completed_lines()
         return True

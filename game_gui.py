@@ -161,7 +161,7 @@ class GameGUI:
         piece_grid.pack()
         for r in range(len(shape)):
             for c in range(len(shape[0])):
-                color = "blue" if shape[r][c] == 1 else "white"
+                color = "red" if shape[r][c] == 2 else "blue" if shape[r][c] == 1 else "white"
                 tk.Label(piece_grid, width=2, height=1, relief=tk.SOLID, borderwidth=CELL_BORDER_WIDTH,
                          bg=color).grid(row=r, column=c, padx=1, pady=1)
 

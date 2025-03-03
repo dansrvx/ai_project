@@ -27,15 +27,17 @@ piece_definitions = {
 
 # Class to generate and manage a sequence of pieces
 class PieceSequence:
-    def __init__(self, piece_definitions, sequence_length=10):
+    def __init__(self, piece_definitions, sequence_length=10, diamond_probability=0.1):
         """
         Initializes the PieceSequence object with piece definitions and the desired sequence length.
 
         :param piece_definitions: Dictionary containing the shapes of different pieces.
         :param sequence_length: Length of the sequence to generate. Default is 10.
+        :param diamond_probability: Probability (0 to 1) of a diamond appearing in a piece.
         """
         self.piece_definitions = piece_definitions  # The available piece definitions
         self.sequence_length = sequence_length  # The length of the sequence to generate
+        self.diamond_probability = diamond_probability  # Probability of diamonds appearing
         self.sequence = []  # The list to store the generated sequence
         self.generate_sequence()  # Generate the initial sequence
 
@@ -51,7 +53,17 @@ class PieceSequence:
         for _ in range(self.sequence_length):
             chosen_piece = random.choice(piece_types)  # Randomly select a piece type
             piece_shape = copy.deepcopy(self.piece_definitions[chosen_piece])  # Deep copy to avoid mutation
+            self.add_diamonds_to_piece(piece_shape)  # Add diamonds based on probability
             self.sequence.append((chosen_piece, piece_shape))  # Add the chosen piece to the sequence
+
+    def add_diamonds_to_piece(self, piece):
+        """
+        Randomly adds diamonds (value 2) to the piece based on the diamond probability.
+        """
+        for r in range(len(piece)):
+            for c in range(len(piece[0])):
+                if piece[r][c] == 1 and random.random() < self.diamond_probability:
+                    piece[r][c] = 2  # Convert cell to diamond
 
     def get_next_piece(self):
         """
