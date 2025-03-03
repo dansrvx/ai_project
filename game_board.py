@@ -1,39 +1,51 @@
 import copy
 import numpy as np
 
+
+# Class to represent the game board and its operations
 class GameBoard:
     def __init__(self, rows, cols):
-        self.rows = rows
-        self.cols = cols
-        self.board = [[0 for _ in range(cols)] for _ in range(rows)]
+        """
+        Initializes the game board with the specified number of rows and columns.
+
+        Args:
+            rows (int): The number of rows on the board.
+            cols (int): The number of columns on the board.
+        """
+        self.rows = rows  # Number of rows in the board
+        self.cols = cols  # Number of columns in the board
+        self.board = [[0 for _ in range(cols)] for _ in range(rows)]  # Initialize the board with all cells set to 0
 
     def initialize_board_state(self, fill_density=0.3, symmetric=False, edge_clear=True, sigma=2, diamond_rate=20):
         """
         Initializes the board state with parameters to control the initial fill density,
-        symmetry, and edge clearance. Also adds diamonds to the board based on diamond_rate,
-        only on cells that were previously defined as 1.
+        symmetry, edge clearance, and places diamonds on the board based on diamond_rate.
 
         Args:
-            fill_density (float): Controls how full the board will be initially (default 0.3).
+            fill_density (float): Controls how full the board will be initially (default is 0.3).
             symmetric (bool): If True, the board will be symmetric along the vertical axis.
             edge_clear (bool): If True, ensures that no border cells (edges of the board) are filled.
-            sigma (float): The sigma value for the Gaussian filter used to create clusters.
+            sigma (float): The sigma value for the Gaussian filter (not used in this function, but could be used for clustering).
             diamond_rate (int): The rate of diamond appearance, affecting the probability of placing a diamond.
         """
+        # Generate a random noise matrix for board initialization
         noise = np.random.rand(self.rows, self.cols)
 
+        # Apply symmetry to the noise if requested
         if symmetric:
             for i in range(self.rows):
                 for j in range(self.cols // 2):
-                    avg = (noise[i, j] + noise[i, self.cols - j - 1]) / 2.0
+                    avg = (noise[i, j] + noise[i, self.cols - j - 1]) / 2.0  # Average the values to create symmetry
                     noise[i, j] = avg
                     noise[i, self.cols - j - 1] = avg
 
+        # Initialize the board with 1s and 0s based on the fill density
         self.board = [
             [1 if noise[r, c] < fill_density else 0 for c in range(self.cols)]
             for r in range(self.rows)
         ]
 
+        # Ensure the edges of the board are empty (0)
         if edge_clear:
             for c in range(self.cols):
                 self.board[0][c] = 0
@@ -42,35 +54,63 @@ class GameBoard:
                 self.board[r][0] = 0
                 self.board[r][self.cols - 1] = 0
 
-        # Diamond placement only on cells with value 1
+        # Place diamonds on cells with value 1 based on the diamond_rate
         for row in range(1, self.rows - 1):  # Avoid edges
             for col in range(1, self.cols - 1):  # Avoid edges
                 if self.board[row][col] == 1 and np.random.randint(0, 100) < diamond_rate:
-                    self.board[row][col] = 2
+                    self.board[row][col] = 2  # Place a diamond (value 2) in the cell
 
     def clear_completed_lines(self):
+        """
+        Clears completed lines (rows or columns) on the board. A line is considered completed if all its cells are filled with 1s.
+
+        Returns:
+            lines_cleared (int): The number of lines (rows or columns) that were cleared.
+        """
         lines_cleared = 0
+
+        # Find rows where all cells are 1
         rows_to_clear = [r for r in range(self.rows) if all(cell == 1 for cell in self.board[r])]
+        # Find columns where all cells are 1
         cols_to_clear = [c for c in range(self.cols) if all(self.board[r][c] == 1 for r in range(self.rows))]
 
+        # Clear the completed rows
         for r in rows_to_clear:
-            self.board[r] = [0] * self.cols
+            self.board[r] = [0] * self.cols  # Set the entire row to 0
             lines_cleared += 1
 
+        # Clear the completed columns
         for c in cols_to_clear:
             for r in range(self.rows):
-                self.board[r][c] = 0
+                self.board[r][c] = 0  # Set the entire column to 0
             lines_cleared += 1
 
-        return lines_cleared
+        return lines_cleared  # Return the total number of cleared lines
 
     def get_copy_with_new_board(self, new_board):
-        """Retorna uma cópia do GameBoard com um novo tabuleiro."""
-        new_game_board = GameBoard(self.rows, self.cols)
-        new_game_board.board = new_board
-        return new_game_board
-    
+        """
+        Returns a copy of the GameBoard with a new board state.
+
+        Args:
+            new_board (list): The new board state to copy into the GameBoard.
+
+        Returns:
+            GameBoard: A new GameBoard object with the provided new board state.
+        """
+        new_game_board = GameBoard(self.rows, self.cols)  # Create a new GameBoard object
+        new_game_board.board = new_board  # Set the new board state
+        return new_game_board  # Return the new GameBoard
+
     def __deepcopy__(self, memo):
-        new_board = GameBoard(self.rows, self.cols)
-        new_board.board = copy.deepcopy(self.board, memo)
-        return new_board
+        """
+        Creates a deep copy of the GameBoard object.
+
+        Args:
+            memo (dict): A memo dictionary to track already copied objects (used for deep copy).
+
+        Returns:
+            GameBoard: A new GameBoard object that is a deep copy of the current one.
+        """
+        new_board = GameBoard(self.rows, self.cols)  # Create a new GameBoard object
+        new_board.board = copy.deepcopy(self.board, memo)  # Deep copy the board
+        return new_board  # Return the deep copied GameBoard
