@@ -60,33 +60,6 @@ class GameBoard:
                 if self.board[row][col] == 1 and np.random.randint(0, 100) < diamond_rate:
                     self.board[row][col] = 2  # Place a diamond (value 2) in the cell
 
-    def clear_completed_lines(self):
-        """
-        Clears completed lines (rows or columns) on the board. A line is considered completed if all its cells are filled with 1s.
-
-        Returns:
-            lines_cleared (int): The number of lines (rows or columns) that were cleared.
-        """
-        lines_cleared = 0
-
-        # Find rows where all cells are 1
-        rows_to_clear = [r for r in range(self.rows) if all(cell == 1 for cell in self.board[r])]
-        # Find columns where all cells are 1
-        cols_to_clear = [c for c in range(self.cols) if all(self.board[r][c] == 1 for r in range(self.rows))]
-
-        # Clear the completed rows
-        for r in rows_to_clear:
-            self.board[r] = [0] * self.cols  # Set the entire row to 0
-            lines_cleared += 1
-
-        # Clear the completed columns
-        for c in cols_to_clear:
-            for r in range(self.rows):
-                self.board[r][c] = 0  # Set the entire column to 0
-            lines_cleared += 1
-
-        return lines_cleared  # Return the total number of cleared lines
-
     def get_copy_with_new_board(self, new_board):
         """
         Returns a copy of the GameBoard with a new board state.

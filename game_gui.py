@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+from ai_player import AIPlayer
 import game_controller as game_controller
 
 # Global UI settings
@@ -24,6 +25,7 @@ class GameGUI:
         self.root.title("Block Placement Game")
         self.root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
         self.game = game_controller
+        self.ai_player = AIPlayer(self.game)  # Initialize AI Player
         self.last_placed_positions = []
 
         # Main frames
@@ -53,6 +55,8 @@ class GameGUI:
         # Buttons
         self.manual_button = tk.Button(root, text="Play Manually", command=self.manual_play_gui, font=FONT_LARGE, width=BUTTON_WIDTH)
         self.manual_button.pack(pady=10)
+        self.ai_button = tk.Button(root, text="Play AI Turn", command=self.play_ai_turn, font=FONT_LARGE, width=BUTTON_WIDTH)  # New AI button
+        self.ai_button.pack(pady=10)
 
         # Initialize board and UI elements
         self.cells = {}
@@ -197,6 +201,23 @@ class GameGUI:
             self.col_entry.delete(0, tk.END)
         else:
             self.status_label.config(text="Invalid move. Try again.")
+
+    def play_ai_turn(self):
+        """
+        Makes the AI play one step and updates the UI.
+        """
+        self.check_game_status()
+        placed_positions = self.ai_player.play_step()
+        if placed_positions:
+            self.last_placed_positions = placed_positions
+            self.update_board_display()
+            self.update_next_piece_display()
+            self.update_score_display()
+            self.update_remaining_pieces_label()
+            self.status_label.config(text="AI placed a piece successfully.")
+            self.check_game_status()
+        else:
+            self.status_label.config(text="AI couldn't find a valid move.")
 
     def check_game_status(self):
         """

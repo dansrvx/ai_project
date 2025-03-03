@@ -82,3 +82,5 @@ class AStarSearch(SearchAlgorithm):
                 heapq.heappush(priority_queue, (new_f, new_g, counter, successor, new_path)) #adiciona o counter
 
         return None
+
+
