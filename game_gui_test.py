@@ -113,7 +113,7 @@ class GameGUI:
 
     def on_cell_click(self, row, col):
         """Handles cell click events."""
-        placed_positions = self.game.manual_play(row, col)
+        placed_positions = self.game.play(row, col)
         if placed_positions:
             self.last_placed_positions = placed_positions
             self.update_board_display()
@@ -178,7 +178,7 @@ class GameGUI:
             self.status_label.config(text="Invalid input: Row and Column must be integers.")
             return
 
-        placed_positions = self.game.manual_play(row, col)
+        placed_positions = self.game.play(row, col)
         if placed_positions:
             self.last_placed_positions = placed_positions
             self.update_board_display()
