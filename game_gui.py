@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import game_controller as game_controller
-from ai_player import AIPlayer
+from search_algorithms import AIPlayer, BFS_AIPlayer, DFSearch, DF_AIPlayer # Import DF_AIPlayer
 
 # Global UI settings - Increased sizes (and further adjustments)
 WINDOW_WIDTH = 400
@@ -27,7 +27,10 @@ class GameGUI:
         self.root.columnconfigure(0, weight=1)
 
         self.game = game_controller
-        self.ai_player = AIPlayer(self.game)  # Initialize AI Player
+        self.ai_player = AIPlayer(self.game)    # Initialize default AI Player (Random)
+        self.bfs_ai_player = BFS_AIPlayer(self.game) # Initialize BFS AI Player
+        self.dfs_ai_player = DF_AIPlayer(self.game) # Initialize DFS AI Player
+        self.current_ai_player = self.ai_player # Set default AI to random AI
         self.last_placed_positions = []
 
         # Main frames
@@ -60,8 +63,13 @@ class GameGUI:
         self.manual_button = tk.Button(root, text="Play Manually", command=self.manual_play_gui, font=FONT_LARGE,
                                        width=BUTTON_WIDTH, padx=10, pady=10) # Increased pady for button
         self.manual_button.pack(pady=20)      # Increased pady for manual_button
-        self.ai_button = tk.Button(root, text="Play AI Turn", command=self.play_ai_turn, font=FONT_LARGE, width=BUTTON_WIDTH)  # New AI button
+        self.ai_button = tk.Button(root, text="Play Random AI Turn", command=self.play_random_ai_turn, font=FONT_LARGE, width=BUTTON_WIDTH)  # AI button (Random AI)
         self.ai_button.pack(pady=10)
+        self.bfs_ai_button = tk.Button(root, text="Play BFS AI Turn", command=self.play_bfs_ai_turn, font=FONT_LARGE, width=BUTTON_WIDTH) # BFS AI Button
+        self.bfs_ai_button.pack(pady=10)
+        self.dfs_ai_button = tk.Button(root, text="Play DFS AI Turn", command=self.play_dfs_ai_turn, font=FONT_LARGE, width=BUTTON_WIDTH) # DFS AI Button
+        self.dfs_ai_button.pack(pady=10)
+
 
         # Initialize board and UI elements
         self.cells = {}
@@ -196,22 +204,44 @@ class GameGUI:
         else:
             self.status_label.config(text="Invalid move. Try again.")
 
-    def play_ai_turn(self):
+    def play_random_ai_turn(self):
         """
-        Makes the AI play one step and updates the UI.
-        """
+        Makes the Random AI play one step and updates the UI."""
+        self.current_ai_player = self.ai_player # Set to Random AI
+        self._play_ai_turn()
+
+    def play_bfs_ai_turn(self):
+        """Makes the BFS AI play one step and updates the UI."""
+        self.current_ai_player = self.bfs_ai_player # Set to BFS AI
+        self._play_ai_turn()
+
+    def play_dfs_ai_turn(self):
+        """Makes the DFS AI play one step and updates the UI."""
+        self.current_ai_player = self.dfs_ai_player # Set to DFS AI
+        self._play_ai_turn()
+
+    def _play_ai_turn(self):
+        """General method to make the currently selected AI player play a turn."""
         self._check_game_status()
-        placed_positions = self.ai_player.play_step()
-        if placed_positions:
-            self.last_placed_positions = placed_positions
-            self.update_board_display()
-            self.update_next_piece_display()
-            self.update_score_display()
-            self._update_remaining_pieces_label()
-            self.status_label.config(text="AI placed a piece successfully.")
-            self._check_game_status()
+        move = self.current_ai_player.play_step() # Get the move from AI
+        if move:
+            piece_name, row, col = move # Unpack the move
+            placed_positions = self.game.play(row, col) # Play the move on the game
+            if placed_positions: # If piece was placed successfully (always should be if AI returns valid move)
+                self.last_placed_positions = placed_positions
+                self.update_board_display()
+                self._update_next_piece_display()
+                self.update_score_display()
+                self._update_remaining_pieces_label()
+                ai_type = "Random" if isinstance(self.current_ai_player, AIPlayer) else ("BFS" if isinstance(self.current_ai_player, BFS_AIPlayer) else "DFS") # Determine AI type name
+                self.status_label.config(text=f"{ai_type} AI placed a piece successfully.")
+                self._check_game_status()
+            else: # Should not happen, but for robustness
+                ai_type = "Random" if isinstance(self.current_ai_player, AIPlayer) else ("BFS" if isinstance(self.current_ai_player, BFS_AIPlayer) else "DFS") # Determine AI type name
+                self.status_label.config(text=f"{ai_type} AI's move was invalid (internal error).")
         else:
-            self.status_label.config(text="AI couldn't find a valid move.")
+            ai_type = "Random" if isinstance(self.current_ai_player, AIPlayer) else ("BFS" if isinstance(self.current_ai_player, BFS_AIPlayer) else "DFS") # Determine AI type name
+            self.status_label.config(text=f"{ai_type} AI couldn't find a valid move.")
 
     def _check_game_status(self):
         """Checks the game status and displays a message if the game ends."""
@@ -221,7 +251,11 @@ class GameGUI:
                                 f"Congratulations! You placed all pieces. Victory!\nScore: {self.game.score}")
             self.manual_button.config(state=tk.DISABLED)
             self.ai_button.config(state=tk.DISABLED)
+            self.bfs_ai_button.config(state=tk.DISABLED)
+            self.dfs_ai_button.config(state=tk.DISABLED)
         elif game_over_status == "defeat":
             messagebox.showinfo("Game Over", f"Sorry! You have lost. Defeat!\nScore: {self.game.score}")
             self.manual_button.config(state=tk.DISABLED)
             self.ai_button.config(state=tk.DISABLED)
+            self.bfs_ai_button.config(state=tk.DISABLED)
+            self.dfs_ai_button.config(state=tk.DISABLED)
