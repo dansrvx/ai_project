@@ -72,7 +72,7 @@ class GameGUI:
         Updates the board display.
         """
         self.play_tree = PlayTree(self.game, 3)
-        #self.play_tree.print_tree()
+        self.play_tree.print_tree()
         self.create_board_grid()
         self.update_cell_colors()
 

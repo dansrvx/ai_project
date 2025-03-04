@@ -6,8 +6,8 @@ from game_gui import GameGUI
 from play_tree import PlayTree
 
 if __name__ == '__main__':
-    rows = 6
-    cols = 6
+    rows = 8
+    cols = 8
     sequence_length = 10
 
     game_board = GameBoard(rows, cols)
