@@ -132,7 +132,7 @@ class GameController:
         for r in range(self.game_board.rows - piece_rows + 1):
             for c in range(self.game_board.cols - piece_cols + 1):
                 if self.can_place_piece(piece, r, c):
-                    print(f"There is a valid move in ({r}, {c})")
+                    #print(f"There is a valid move in ({r}, {c})") # Debugging line - can be removed
                     return False  # A valid move exists
         return True  # No valid moves available
 
@@ -157,3 +157,10 @@ class GameController:
             return placed_positions
 
         return None
+
+    def get_game_state(self):
+        """
+        Returns the current GameState object representing the game's state.
+        Used by AI players to access the game state for decision making.
+        """
+        return GameState(copy.deepcopy(self.game_board), copy.deepcopy(self.piece_sequence.sequence))
