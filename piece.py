@@ -86,3 +86,13 @@ class PieceSequence:
         if self.sequence:
             return self.sequence[0]  # Return the first piece in the sequence without removing it
         return None  # Return None if the sequence is empty
+
+
+    def get_full_sequence(self):
+        """
+        Returns the entire sequence of remaining pieces.
+
+        :return: A list of tuples containing piece types and their shapes.
+        """
+        return self.sequence.copy()
+

@@ -7,29 +7,13 @@ class GameController:
     Manages the game logic, including piece placement, board updates, and game state checks.
     """
 
-    def __init__(self, game_board, piece_sequence, search_algorithm):
+    def __init__(self, game_board, piece_sequence):
         """
         Initializes the game controller with a board, a sequence of pieces, and a search algorithm.
         """
         self.game_board = game_board
         self.piece_sequence = piece_sequence
-        self.search_algorithm = search_algorithm
         self.score = 0
-
-    def play_game(self):
-        """
-        Executes the game using the search algorithm to find a solution sequence.
-        """
-        initial_state = GameState(self.game_board, self.piece_sequence.sequence)
-        solution = self.search_algorithm.search(initial_state)
-
-        if solution:
-            for piece_name, row, col in solution:
-                piece = self.piece_sequence.piece_definitions[piece_name]
-                self.place_piece(piece, row, col)
-                self.piece_sequence.sequence.pop(0)
-            return True
-        return False
 
     def can_place_piece(self, piece, top_left_row, top_left_col):
         """

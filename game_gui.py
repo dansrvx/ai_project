@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import messagebox
 from ai_player import AIPlayer
 import game_controller as game_controller
+from play_tree import PlayTree
+from search_algorithms import SearchAlgorithms
 
 # Global UI settings
 WINDOW_WIDTH = 800
@@ -27,6 +29,7 @@ class GameGUI:
         self.game = game_controller
         self.ai_player = AIPlayer(self.game)  # Initialize AI Player
         self.last_placed_positions = []
+        self.play_tree = None
 
         # Main frames
         self.board_frame = tk.Frame(root)
@@ -68,6 +71,8 @@ class GameGUI:
         """
         Updates the board display.
         """
+        self.play_tree = PlayTree(self.game, 3)
+        #self.play_tree.print_tree()
         self.create_board_grid()
         self.update_cell_colors()
 
@@ -207,7 +212,10 @@ class GameGUI:
         Makes the AI play one step and updates the UI.
         """
         self.check_game_status()
-        placed_positions = self.ai_player.play_step()
+        # placed_positions = self.ai_player.play_step()
+        game_plan = SearchAlgorithms.a_star_search(self.play_tree)
+        print('Game plan :', game_plan)
+        placed_positions = self.game.play(game_plan[0][0],  game_plan[0][1])
         if placed_positions:
             self.last_placed_positions = placed_positions
             self.update_board_display()

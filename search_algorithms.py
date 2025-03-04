@@ -1,4 +1,6 @@
 import heapq
+'''
+import heapq
 from abc import ABC, abstractmethod
 
 class SearchAlgorithm(ABC):
@@ -82,5 +84,42 @@ class AStarSearch(SearchAlgorithm):
                 heapq.heappush(priority_queue, (new_f, new_g, counter, successor, new_path)) #adiciona o counter
 
         return None
+'''
+
+
+class SearchAlgorithms:
+    """
+    Implements various search algorithms to find the best move in the play tree.
+    """
+
+    @staticmethod
+    def a_star_search(play_tree):
+        """
+        Performs A* search to find the best sequence of moves in the play tree based on cost and heuristic.
+        Only considers paths from the root to leaf nodes, ensuring no cycles or returns.
+
+        :param play_tree: The root of the play tree.
+        :return: A list of (row, col) tuples representing the sequence of best moves found using A*.
+        """
+        priority_queue = []
+        heapq.heappush(priority_queue,
+                       (0, id(play_tree.root), play_tree.root, []))  # (cost + heuristic, unique id, node, path)
+        best_path = []
+        best_score = float('-inf')
+
+        while priority_queue:
+            _, _, node, path = heapq.heappop(priority_queue)
+
+            if not node.children:  # Only consider paths leading to leaf nodes
+                score = node.heuristic - node.cost  # A* formula: f(n) = h(n) - g(n)
+                if score > best_score:
+                    best_score = score
+                    best_path = path + [node.position]  # Store the path to the best leaf node
+
+            for child in node.children:
+                heapq.heappush(priority_queue,
+                               (child.heuristic - child.cost, id(child), child, path + [child.position]))
+
+        return best_path
 
 
