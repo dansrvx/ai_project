@@ -30,7 +30,7 @@ class GameGUI:
         self.ai_player = AIPlayer(self.game)  # Initialize AI Player
         self.last_placed_positions = []
         self.play_tree = self.calculate_tree()
-        self.game_plan = SearchAlgorithms.a_star_search(self.play_tree)
+        self.game_plan = None
 
         # Main frames
         self.board_frame = tk.Frame(root)
@@ -57,10 +57,22 @@ class GameGUI:
         self.col_entry.pack(side=tk.LEFT)
 
         # Buttons
-        self.manual_button = tk.Button(root, text="Play Manually", command=self.manual_play_gui, font=FONT_LARGE, width=BUTTON_WIDTH)
+        # Buttons
+        self.manual_button = tk.Button(root, text="Play Manually", command=self.manual_play_gui, font=FONT_LARGE,
+                                       width=BUTTON_WIDTH)
         self.manual_button.pack(pady=10)
-        self.ai_button = tk.Button(root, text="Play AI Turn", command=self.play_ai_turn, font=FONT_LARGE, width=BUTTON_WIDTH)  # New AI button
+
+        self.ai_button = tk.Button(root, text="Play assisted by AI", command=self.play_ai_turn, font=FONT_LARGE,
+                                   width=BUTTON_WIDTH, state=tk.DISABLED)
         self.ai_button.pack(pady=10)
+
+        self.bfs = tk.Button(root, text="Calculate game plan BFS", command=lambda: self.get_game_plan('BFS'),
+                             font=FONT_LARGE, width=BUTTON_WIDTH)
+        self.bfs.pack(pady=10)
+
+        self.a_star = tk.Button(root, text="Calculate game plan A*", command=lambda: self.get_game_plan('A*'),
+                                font=FONT_LARGE, width=BUTTON_WIDTH)
+        self.a_star.pack(pady=10)
 
         # Initialize board and UI elements
         self.cells = {}
@@ -72,6 +84,15 @@ class GameGUI:
         tree = PlayTree(self.game, len(self.game.piece_sequence.sequence))
         tree.print_tree()
         return tree
+
+    def get_game_plan(self, algorithm):
+        if algorithm == 'BFS':
+            self.game_plan = SearchAlgorithms.a_star_search(self.play_tree)
+        elif algorithm == 'A*':
+            self.game_plan = SearchAlgorithms.a_star_search(self.play_tree)
+
+        if self.game_plan:  # If a valid game plan exists, enable AI button
+            self.ai_button.config(state=tk.NORMAL)
 
     def update_board_display(self):
         """
@@ -241,8 +262,10 @@ class GameGUI:
             messagebox.showinfo("Game Over",
                                 f"Congratulations! You placed all pieces. Victory!\nScore: {self.game.score}")
             self.manual_button.config(state=tk.DISABLED)
+            self.ai_button.config(state=tk.DISABLED)
         elif game_over_status == "defeat":
             messagebox.showinfo("Game Over", f"Sorry! You have lost. Defeat!\nScore: {self.game.score}")
             self.manual_button.config(state=tk.DISABLED)
+            self.ai_button.config(state=tk.DISABLED)
         else:
             print("The player can keep playing")
