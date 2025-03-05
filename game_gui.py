@@ -73,6 +73,10 @@ class GameGUI:
         self.a_star = tk.Button(root, text="Calculate game plan A*", command=lambda: self.get_game_plan('A*'),
                                 font=FONT_LARGE, width=BUTTON_WIDTH)
         self.a_star.pack(pady=10)
+        
+        self.ids_button = tk.Button(root, text="Calculate game plan IDS", command=lambda: self.get_game_plan('IDS'),
+                                 font=FONT_LARGE, width=BUTTON_WIDTH)
+        self.ids_button.pack(pady=10)
 
         # Initialize board and UI elements
         self.cells = {}
@@ -87,12 +91,41 @@ class GameGUI:
 
     def get_game_plan(self, algorithm):
         if algorithm == 'BFS':
-            self.game_plan = SearchAlgorithms.a_star_search(self.play_tree)
+            game_plan_positions = SearchAlgorithms.breadth_first_search(self.play_tree)
+            if game_plan_positions:
+                pieces_names = [piece[0] for piece in self.game.piece_sequence.get_full_sequence()]
+                self.game_plan = list(zip(game_plan_positions, pieces_names))
+                print("BFS Game Plan:", self.game_plan)
+            else:
+                self.game_plan = None
+                print("No BFS Game Plan found.")
+
         elif algorithm == 'A*':
-            self.game_plan = SearchAlgorithms.a_star_search(self.play_tree)
+            game_plan_positions = SearchAlgorithms.a_star_search(self.play_tree)
+            if game_plan_positions:
+                pieces_names = [piece[0] for piece in self.game.piece_sequence.get_full_sequence()]
+                self.game_plan = list(zip(game_plan_positions, pieces_names))
+                print("A* Game Plan:", self.game_plan)
+            else:
+                self.game_plan = None
+                print("No A* Game Plan found.")
+
+        elif algorithm == 'IDS':
+            game_plan_positions = SearchAlgorithms.iterative_deepening_search(self.play_tree, max_depth=10) # You can adjust max_depth
+            if game_plan_positions:
+                pieces_names = [piece[0] for piece in self.game.piece_sequence.get_full_sequence()]
+                self.game_plan = list(zip(game_plan_positions, pieces_names))
+                print("IDS Game Plan:", self.game_plan)
+            else:
+                self.game_plan = None
+                print("No IDS Game Plan found.")
+
 
         if self.game_plan:  # If a valid game plan exists, enable AI button
             self.ai_button.config(state=tk.NORMAL)
+        else:
+            self.ai_button.config(state=tk.DISABLED)
+
 
     def update_board_display(self):
         """
@@ -240,18 +273,23 @@ class GameGUI:
         self.check_game_status()
         # placed_positions = self.ai_player.play_step()
         print('Game plan :', self.game_plan)
-        placed_positions = self.game.play(self.game_plan[0][0],  self.game_plan[0][1])
-        self.game_plan.pop(0)
-        if placed_positions:
-            self.last_placed_positions = placed_positions
-            self.update_board_display()
-            self.update_next_piece_display()
-            self.update_score_display()
-            self.update_remaining_pieces_label()
-            self.status_label.config(text="AI placed a piece successfully.")
-            self.check_game_status()
+        if self.game_plan:
+            next_move, piece_name = self.game_plan.pop(0)
+            placed_positions = self.game.play(next_move[0],  next_move[1])
+
+            if placed_positions:
+                self.last_placed_positions = placed_positions
+                self.update_board_display()
+                self.update_next_piece_display()
+                self.update_score_display()
+                self.update_remaining_pieces_label()
+                self.status_label.config(text="AI placed a piece successfully.")
+                self.check_game_status()
+            else:
+                self.status_label.config(text="AI couldn't find a valid move.")
         else:
-            self.status_label.config(text="AI couldn't find a valid move.")
+            self.status_label.config(text="No game plan available.")
+
 
     def check_game_status(self):
         """

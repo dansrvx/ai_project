@@ -52,7 +52,7 @@ class AStarSearch(SearchAlgorithm):
             for row, col in actions:
                 score = state.calculate_potential_score(piece, row, col)
                 best_score = max(best_score, score)
-            return -best_score + len(state.remaining_pieces)        
+            return -best_score + len(state.remaining_pieces)
 
         start_state = game_state
         priority_queue = [(heuristic(start_state), 0, 0, start_state, [])]  # (f(n), g(n), counter, state, path)
@@ -87,6 +87,7 @@ class AStarSearch(SearchAlgorithm):
 '''
 
 import heapq
+import collections
 
 
 class SearchAlgorithms:
@@ -117,6 +118,36 @@ class SearchAlgorithms:
         return None  # No winning path found
 
     @staticmethod
+    def breadth_first_search(play_tree):
+        """
+        Performs Breadth-First Search (BFS) to find the shortest path to a victory in the play tree.
+        This function explores all possible moves level by level.
+
+        :param play_tree: The root of the play tree.
+        :return: The sequence of moves (list of (row, col) tuples) leading to a victory,
+                 or None if no path to victory is found.
+        """
+        queue = collections.deque([(play_tree.root, [])])  # Queue of (node, path_to_node)
+        visited_boards = set()
+
+        while queue:
+            current_node, path = queue.popleft()
+            board_tuple = tuple(tuple(row) for row in current_node.game_controller.game_board.board)
+
+            if board_tuple in visited_boards:
+                continue
+            visited_boards.add(board_tuple)
+
+            if current_node.game_status == "victory":
+                return path + [current_node.position] if current_node.position else path # Return the path to victory
+
+            for child in current_node.children:
+                new_path = path + [current_node.position] if current_node.position else path
+                queue.append((child, new_path))
+
+        return None # No path to victory found
+
+    @staticmethod
     def a_star_search(play_tree):
         """
         Performs A* search to find the best sequence of moves in the play tree based on cost and heuristic.
@@ -145,6 +176,53 @@ class SearchAlgorithms:
                                (child.heuristic - child.cost, id(child), child, path + [child.position]))
 
         return best_path
+    
+    
+    @staticmethod
+    def depth_limited_search(play_tree, depth_limit):
+        """
+        Performs Depth-Limited Search (DLS) to find a path to victory within a given depth limit.
 
+        :param play_tree: The root of the play tree.
+        :param depth_limit: The maximum depth to search.
+        :return: The sequence of moves (list of (row, col) tuples) leading to a victory within the depth limit,
+                 or None if no path to victory is found within the limit.
+        """
+        stack = [(play_tree.root, [], 0)]  # Stack of (node, path_to_node, current_depth)
+        visited_boards = set()
 
+        while stack:
+            node, path, depth = stack.pop()
+            board_tuple = tuple(tuple(row) for row in node.game_controller.game_board.board)
 
+            if board_tuple in visited_boards:
+                continue
+            visited_boards.add(board_tuple)
+
+            if node.game_status == "victory":
+                return path + [node.position] if node.position else path # Return path to victory
+
+            if depth < depth_limit:
+                for child in node.children:
+                    new_path = path + [node.position] if node.position else path
+                    stack.append((child, new_path, depth + 1))
+
+        return None  # No path to victory within depth limit
+
+    
+    @staticmethod
+    def iterative_deepening_search(play_tree, max_depth):
+        """
+        Performs Iterative Deepening Search (IDS) by repeatedly calling Depth-Limited Search
+        with increasing depth limits.
+
+        :param play_tree: The root of the play tree.
+        :param max_depth: The maximum depth to explore.
+        :return: The sequence of moves (list of (row, col) tuples) leading to a victory,
+                 or None if no path to victory is found within the max depth.
+        """
+        for depth_limit in range(max_depth + 1): # Iterate through depth limits from 0 to max_depth
+            result = SearchAlgorithms.depth_limited_search(play_tree, depth_limit)
+            if result:
+                return result # Return the path if found at the current depth limit
+        return None # No path to victory found within max_depth
