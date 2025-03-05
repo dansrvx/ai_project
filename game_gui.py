@@ -8,9 +8,9 @@ from search_algorithms import SearchAlgorithms
 # Global UI settings
 WINDOW_WIDTH = 700
 WINDOW_HEIGHT = 900
-FONT_LARGE = ("Arial", 16)
-FONT_MEDIUM = ("Arial", 12)
-FONT_SMALL = ("Arial", 10)
+FONT_LARGE = ("Arial", 12)
+FONT_MEDIUM = ("Arial", 10)
+FONT_SMALL = ("Arial", 8)
 BUTTON_WIDTH = 20
 BUTTON_HEIGHT = 1
 CELL_BORDER_WIDTH = 1
@@ -68,38 +68,43 @@ class GameGUI:
         # Button Frame (to group buttons properly)
         self.button_frame = tk.Frame(root)
         self.button_frame.pack(pady=20)
-
+        
         # Buttons for Gameplay
         self.manual_button = tk.Button(self.button_frame, text="Play Manually", command=self.manual_play_gui,
                                        font=FONT_LARGE, width=BUTTON_WIDTH, height=BUTTON_HEIGHT, **GAME_BUTTON_STYLE)
         self.manual_button.pack(pady=5)
-
+        
         self.ai_button = tk.Button(self.button_frame, text="Play assisted by AI", command=self.play_ai_turn,
                                    font=FONT_LARGE, width=BUTTON_WIDTH, height=BUTTON_HEIGHT, state=tk.DISABLED,
                                    **GAME_BUTTON_STYLE)
         self.ai_button.pack(pady=5)
-
+        
         # Buttons for Planning
         self.dfs_button = tk.Button(self.button_frame, text="Calculate game plan DFS",
                                     command=lambda: self.get_game_plan('DFS'),
                                     font=FONT_LARGE, width=BUTTON_WIDTH, height=BUTTON_HEIGHT, **PLAN_BUTTON_STYLE)
         self.dfs_button.pack(pady=5)
-
+        
         self.bfs_button = tk.Button(self.button_frame, text="Calculate game plan BFS",
                                     command=lambda: self.get_game_plan('BFS'),
                                     font=FONT_LARGE, width=BUTTON_WIDTH, height=BUTTON_HEIGHT, **PLAN_BUTTON_STYLE)
         self.bfs_button.pack(pady=5)
-
+        
         self.a_star_button = tk.Button(self.button_frame, text="Calculate game plan A*",
                                        command=lambda: self.get_game_plan('A*'),
                                        font=FONT_LARGE, width=BUTTON_WIDTH, height=BUTTON_HEIGHT, **PLAN_BUTTON_STYLE)
         self.a_star_button.pack(pady=5)
-
+        
+        self.a_greedy_button = tk.Button(self.button_frame, text="Calculate game Greedy",
+                                       command=lambda: self.get_game_plan('Greedy'),
+                                       font=FONT_LARGE, width=BUTTON_WIDTH, height=BUTTON_HEIGHT, **PLAN_BUTTON_STYLE)
+        self.a_greedy_button.pack(pady=5)  
+        
         self.ids_button = tk.Button(self.button_frame, text="Calculate game plan IDS",
                                     command=lambda: self.get_game_plan('IDS'),
                                     font=FONT_LARGE, width=BUTTON_WIDTH, height=BUTTON_HEIGHT, **PLAN_BUTTON_STYLE)
         self.ids_button.pack(pady=5)
-
+        
         # Initialize board and UI elements
         self.cells = {}
         self.update_board_display()
@@ -141,6 +146,16 @@ class GameGUI:
             else:
                 self.game_plan = None
                 print("No A* Game Plan found.")
+
+        elif algorithm == 'Greedy':
+            game_plan_positions = SearchAlgorithms.greedy_search(self.play_tree)
+            if game_plan_positions:
+                pieces_names = [piece[0] for piece in self.game.piece_sequence.get_full_sequence()]
+                self.game_plan = list(zip(game_plan_positions, pieces_names))
+                print("Greedy Game Plan:", self.game_plan)
+            else:
+                self.game_plan = None
+                print("No Greedy Game Plan found.")
 
         elif algorithm == 'IDS':
             game_plan_positions = SearchAlgorithms.iterative_deepening_search(self.play_tree, max_depth=10) # You can adjust max_depth
