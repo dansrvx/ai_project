@@ -17,7 +17,8 @@ class GameController:
 
     def can_place_piece(self, piece, top_left_row, top_left_col):
         """
-        Checks if a piece can be placed at a given position without overlapping filled cells or going out of bounds.
+        Checks if a piece can be placed at a given position without overlapping filled cells (1 or 2)
+        or going out of bounds.
         """
         piece_rows = len(piece)
         piece_cols = len(piece[0])
@@ -28,11 +29,16 @@ class GameController:
                 top_left_col + piece_cols > self.game_board.cols):
             return False
 
-        # Check for overlapping filled cells or diamonds (value 2)
+        # Check for overlapping filled cells
         for r in range(piece_rows):
             for c in range(piece_cols):
-                if piece[r][c] == 1 and (self.game_board.board[top_left_row + r][top_left_col + c] in [1, 2]):
+                piece_value = piece[r][c]
+                board_value = self.game_board.board[top_left_row + r][top_left_col + c]
+
+                # If the piece has a 1 or 2, it can only be placed over a 0 (empty space)
+                if piece_value in [1, 2] and board_value != 0:
                     return False
+
         return True
 
     def place_piece(self, piece, top_left_row, top_left_col):

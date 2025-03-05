@@ -29,7 +29,8 @@ class GameGUI:
         self.game = game_controller
         self.ai_player = AIPlayer(self.game)  # Initialize AI Player
         self.last_placed_positions = []
-        self.play_tree = None
+        self.play_tree = self.calculate_tree()
+        self.game_plan = SearchAlgorithms.a_star_search(self.play_tree)
 
         # Main frames
         self.board_frame = tk.Frame(root)
@@ -67,12 +68,15 @@ class GameGUI:
         self.update_next_piece_display()
         self.update_score_display()
 
+    def calculate_tree(self):
+        tree = PlayTree(self.game, len(self.game.piece_sequence.sequence))
+        tree.print_tree()
+        return tree
+
     def update_board_display(self):
         """
         Updates the board display.
         """
-        self.play_tree = PlayTree(self.game, 3)
-        self.play_tree.print_tree()
         self.create_board_grid()
         self.update_cell_colors()
 
@@ -137,6 +141,7 @@ class GameGUI:
                 if (r, c) in self.last_placed_positions:
                     color = "green"
                 self.cells[(r, c)].config(bg=color)
+
 
     def update_next_piece_display(self):
         """
@@ -213,9 +218,9 @@ class GameGUI:
         """
         self.check_game_status()
         # placed_positions = self.ai_player.play_step()
-        game_plan = SearchAlgorithms.a_star_search(self.play_tree)
-        print('Game plan :', game_plan)
-        placed_positions = self.game.play(game_plan[0][0],  game_plan[0][1])
+        print('Game plan :', self.game_plan)
+        placed_positions = self.game.play(self.game_plan[0][0],  self.game_plan[0][1])
+        self.game_plan.pop(0)
         if placed_positions:
             self.last_placed_positions = placed_positions
             self.update_board_display()

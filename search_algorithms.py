@@ -86,6 +86,8 @@ class AStarSearch(SearchAlgorithm):
         return None
 '''
 
+import heapq
+
 
 class SearchAlgorithms:
     """
@@ -93,13 +95,35 @@ class SearchAlgorithms:
     """
 
     @staticmethod
+    def depth_first_search(play_tree):
+        """
+        Performs Depth-First Search (DFS) to find the first move leading to a victory.
+        This function does not use heuristics, it simply finds the first valid path to a win.
+
+        :param play_tree: The root of the play tree.
+        :return: The first move (row, col) that leads to a victory, or None if no path leads to a win.
+        """
+        stack = [(play_tree.root, None)]  # Stack contains tuples (current_node, parent_node)
+
+        while stack:
+            node, parent = stack.pop()
+
+            if node.game_status == "victory":  # Stop as soon as a victory path is found
+                return parent.position if parent else None
+
+            for child in node.children:
+                stack.append((child, node))  # Continue exploring deeper first
+
+        return None  # No winning path found
+
+    @staticmethod
     def a_star_search(play_tree):
         """
         Performs A* search to find the best sequence of moves in the play tree based on cost and heuristic.
-        Only considers paths from the root to leaf nodes, ensuring no cycles or returns.
+        Only considers paths that result in a victory.
 
         :param play_tree: The root of the play tree.
-        :return: A list of (row, col) tuples representing the sequence of best moves found using A*.
+        :return: A list of (row, col) tuples representing the sequence of best moves leading to victory, or [] if no such path exists.
         """
         priority_queue = []
         heapq.heappush(priority_queue,
@@ -110,16 +134,17 @@ class SearchAlgorithms:
         while priority_queue:
             _, _, node, path = heapq.heappop(priority_queue)
 
-            if not node.children:  # Only consider paths leading to leaf nodes
+            if node.game_status == "victory":  # Only consider paths that lead to a win
                 score = node.heuristic - node.cost  # A* formula: f(n) = h(n) - g(n)
                 if score > best_score:
                     best_score = score
-                    best_path = path + [node.position]  # Store the path to the best leaf node
+                    best_path = path + [node.position]  # Store the path to the best victory node
 
             for child in node.children:
                 heapq.heappush(priority_queue,
                                (child.heuristic - child.cost, id(child), child, path + [child.position]))
 
         return best_path
+
 
 
