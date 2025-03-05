@@ -98,24 +98,32 @@ class SearchAlgorithms:
     @staticmethod
     def depth_first_search(play_tree):
         """
-        Performs Depth-First Search (DFS) to find the first move leading to a victory.
-        This function does not use heuristics, it simply finds the first valid path to a win.
+        Performs Depth-First Search (DFS) to find a path to a victory in the play tree.
+        This function explores paths as deep as possible before backtracking.
 
         :param play_tree: The root of the play tree.
-        :return: The first move (row, col) that leads to a victory, or None if no path leads to a win.
+        :return: The sequence of moves (list of (row, col) tuples) leading to a victory,
+                 or None if no path to victory is found.
         """
-        stack = [(play_tree.root, None)]  # Stack contains tuples (current_node, parent_node)
+        stack = [(play_tree.root, [])]  # Stack of (node, path_to_node)
+        visited_boards = set()
 
         while stack:
-            node, parent = stack.pop()
+            current_node, path = stack.pop()
+            board_tuple = tuple(tuple(row) for row in current_node.game_controller.game_board.board)
 
-            if node.game_status == "victory":  # Stop as soon as a victory path is found
-                return parent.position if parent else None
+            if board_tuple in visited_boards:
+                continue
+            visited_boards.add(board_tuple)
 
-            for child in node.children:
-                stack.append((child, node))  # Continue exploring deeper first
+            if current_node.game_status == "victory":
+                return path + [current_node.position] if current_node.position else path  # Return the path to victory
 
-        return None  # No winning path found
+            for child in reversed(current_node.children):  # Reverse to maintain left-to-right order
+                new_path = path + [current_node.position] if current_node.position else path
+                stack.append((child, new_path))
+
+        return None  # No path to victory found
 
     @staticmethod
     def breadth_first_search(play_tree):

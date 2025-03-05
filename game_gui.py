@@ -12,9 +12,18 @@ FONT_LARGE = ("Arial", 16)
 FONT_MEDIUM = ("Arial", 12)
 FONT_SMALL = ("Arial", 10)
 BUTTON_WIDTH = 20
+BUTTON_HEIGHT = 1
 CELL_BORDER_WIDTH = 1
 CELL_COLORS = {0: "white", 1: "blue", 2: "red", "last_placed": "green"}
 HIGHLIGHT_COLOR = "yellow"
+
+GAME_BUTTON_STYLE = {
+    "bg": "#155724", "fg": "white", "activebackground": "#0b3d20"
+}
+
+PLAN_BUTTON_STYLE = {
+    "bg": "#003366", "fg": "white", "activebackground": "#002244"
+}
 
 
 class GameGUI:
@@ -56,27 +65,40 @@ class GameGUI:
         self.col_entry = tk.Entry(self.input_frame, width=5, font=FONT_MEDIUM)
         self.col_entry.pack(side=tk.LEFT)
 
-        # Buttons
-        # Buttons
-        self.manual_button = tk.Button(root, text="Play Manually", command=self.manual_play_gui, font=FONT_LARGE,
-                                       width=BUTTON_WIDTH)
-        self.manual_button.pack(pady=10)
+        # Button Frame (to group buttons properly)
+        self.button_frame = tk.Frame(root)
+        self.button_frame.pack(pady=20)
 
-        self.ai_button = tk.Button(root, text="Play assisted by AI", command=self.play_ai_turn, font=FONT_LARGE,
-                                   width=BUTTON_WIDTH, state=tk.DISABLED)
-        self.ai_button.pack(pady=10)
+        # Buttons for Gameplay
+        self.manual_button = tk.Button(self.button_frame, text="Play Manually", command=self.manual_play_gui,
+                                       font=FONT_LARGE, width=BUTTON_WIDTH, height=BUTTON_HEIGHT, **GAME_BUTTON_STYLE)
+        self.manual_button.pack(pady=5)
 
-        self.bfs = tk.Button(root, text="Calculate game plan BFS", command=lambda: self.get_game_plan('BFS'),
-                             font=FONT_LARGE, width=BUTTON_WIDTH)
-        self.bfs.pack(pady=10)
+        self.ai_button = tk.Button(self.button_frame, text="Play assisted by AI", command=self.play_ai_turn,
+                                   font=FONT_LARGE, width=BUTTON_WIDTH, height=BUTTON_HEIGHT, state=tk.DISABLED,
+                                   **GAME_BUTTON_STYLE)
+        self.ai_button.pack(pady=5)
 
-        self.a_star = tk.Button(root, text="Calculate game plan A*", command=lambda: self.get_game_plan('A*'),
-                                font=FONT_LARGE, width=BUTTON_WIDTH)
-        self.a_star.pack(pady=10)
-        
-        self.ids_button = tk.Button(root, text="Calculate game plan IDS", command=lambda: self.get_game_plan('IDS'),
-                                 font=FONT_LARGE, width=BUTTON_WIDTH)
-        self.ids_button.pack(pady=10)
+        # Buttons for Planning
+        self.dfs_button = tk.Button(self.button_frame, text="Calculate game plan DFS",
+                                    command=lambda: self.get_game_plan('DFS'),
+                                    font=FONT_LARGE, width=BUTTON_WIDTH, height=BUTTON_HEIGHT, **PLAN_BUTTON_STYLE)
+        self.dfs_button.pack(pady=5)
+
+        self.bfs_button = tk.Button(self.button_frame, text="Calculate game plan BFS",
+                                    command=lambda: self.get_game_plan('BFS'),
+                                    font=FONT_LARGE, width=BUTTON_WIDTH, height=BUTTON_HEIGHT, **PLAN_BUTTON_STYLE)
+        self.bfs_button.pack(pady=5)
+
+        self.a_star_button = tk.Button(self.button_frame, text="Calculate game plan A*",
+                                       command=lambda: self.get_game_plan('A*'),
+                                       font=FONT_LARGE, width=BUTTON_WIDTH, height=BUTTON_HEIGHT, **PLAN_BUTTON_STYLE)
+        self.a_star_button.pack(pady=5)
+
+        self.ids_button = tk.Button(self.button_frame, text="Calculate game plan IDS",
+                                    command=lambda: self.get_game_plan('IDS'),
+                                    font=FONT_LARGE, width=BUTTON_WIDTH, height=BUTTON_HEIGHT, **PLAN_BUTTON_STYLE)
+        self.ids_button.pack(pady=5)
 
         # Initialize board and UI elements
         self.cells = {}
@@ -90,6 +112,16 @@ class GameGUI:
         return tree
 
     def get_game_plan(self, algorithm):
+        if algorithm == 'DFS':
+            game_plan_positions = SearchAlgorithms.depth_first_search(self.play_tree)
+            if game_plan_positions:
+                pieces_names = [piece[0] for piece in self.game.piece_sequence.get_full_sequence()]
+                self.game_plan = list(zip(game_plan_positions, pieces_names))
+                print("DFS Game Plan:", self.game_plan)
+            else:
+                self.game_plan = None
+                print("No DFS Game Plan found.")
+
         if algorithm == 'BFS':
             game_plan_positions = SearchAlgorithms.breadth_first_search(self.play_tree)
             if game_plan_positions:
