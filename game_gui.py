@@ -6,8 +6,8 @@ from play_tree import PlayTree
 from search_algorithms import SearchAlgorithms
 
 # Global UI settings
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 800
+WINDOW_WIDTH = 700
+WINDOW_HEIGHT = 900
 FONT_LARGE = ("Arial", 16)
 FONT_MEDIUM = ("Arial", 12)
 FONT_SMALL = ("Arial", 10)
