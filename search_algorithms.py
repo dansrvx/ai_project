@@ -90,6 +90,9 @@ import heapq
 import collections
 import time
 
+from logger_config import setup_logger # Importe o modulo de configuração.
+
+logger = setup_logger() # Configura o logger
 
 class SearchAlgorithms:
     """
@@ -123,7 +126,7 @@ class SearchAlgorithms:
             if current_node.game_status == "victory":
                 end_time = time.time()
                 execution_time = end_time - start_time
-                print(
+                logger.info(
                     f"Depth-First Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Comprimento: {len(path + [current_node.position] if current_node.position else path)}"
                 )
                 return path + [current_node.position] if current_node.position else path  # Return the path to victory
@@ -134,7 +137,7 @@ class SearchAlgorithms:
 
         end_time = time.time()
         execution_time = end_time - start_time
-        print(
+        logger.info(
             f"Depth-First Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Comprimento: None"
         )
         return None  # No path to victory found
@@ -166,7 +169,7 @@ class SearchAlgorithms:
             if current_node.game_status == "victory":
                 end_time = time.time()
                 execution_time = end_time - start_time
-                print(
+                logger.info(
                     f"Breadth-First Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Comprimento: {len(path + [current_node.position] if current_node.position else path)}"
                 )
                 return path + [current_node.position] if current_node.position else path # Return the path to victory
@@ -176,7 +179,7 @@ class SearchAlgorithms:
                 queue.append((child, new_path))
                 end_time = time.time()
         execution_time = end_time - start_time
-        print(
+        logger.info(
                     f"Breadth-First Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Comprimento: {len(path + [current_node.position] if current_node.position else path)}"
         )
         return None # No path to victory found
@@ -214,7 +217,7 @@ class SearchAlgorithms:
 
         end_time = time.time()
         execution_time = end_time - start_time
-        print(f"A* Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Pontuação: {best_score}, Comprimento: {len(best_path)}")
+        logger.info(f"A* Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Pontuação: {best_score}, Comprimento: {len(best_path)}")
         
         return best_path
 
@@ -251,7 +254,7 @@ class SearchAlgorithms:
 
         end_time = time.time()
         execution_time = end_time - start_time
-        print(f"Greedy Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Pontuação: {best_score}, Comprimento: {len(best_path)}")
+        logger.info(f"Greedy Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Pontuação: {best_score}, Comprimento: {len(best_path)}")
         return best_path    
     
     @staticmethod
@@ -283,7 +286,7 @@ class SearchAlgorithms:
                 solution_depth = depth
                 end_time = time.time()
                 execution_time = end_time - start_time
-                print(
+                logger.info(
                     f"Depth-Limited Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Profundidade da solução: {solution_depth}, Comprimento: {len(path + [node.position] if node.position else path)}, Limite de profundidade: {depth_limit}"
                 )
                 return path + [node.position] if node.position else path # Return path to victory
@@ -295,7 +298,7 @@ class SearchAlgorithms:
 
         end_time = time.time()
         execution_time = end_time - start_time
-        print(
+        logger.info(
                 f"Depth-Limited Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Profundidade da solução: {solution_depth}, Comprimento: None, Limite de profundidade: {depth_limit}"
         )
         return None  # No path to victory within depth limit

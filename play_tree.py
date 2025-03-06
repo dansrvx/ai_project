@@ -137,7 +137,9 @@ class PlayTree:
 '''
 
 import copy
+from logger_config import setup_logger # Importe o modulo de configuração.
 
+logger = setup_logger() # Configura o logger
 
 class PlayTreeNode:
     """
@@ -266,12 +268,12 @@ class PlayTree:
 
         indent = "  " * depth
         if node.piece_name:
-            print(
+            logger.info(
                 f"{indent}- Piece: {node.piece_name} at Position: {node.position} (Cost: {node.cost}, Heuristic: {node.heuristic}), {node.game_status}")
             for row in node.piece_shape:
-                print(f"{indent}  {row}")
+                logger.info(f"{indent}  {row}")
         else:
-            print(f"{indent}- Root Node (Initial State)")
+            logger.info(f"{indent}- Root Node (Initial State)")
 
         for child in node.children:
             self.print_tree(child, depth + 1)

@@ -4,6 +4,9 @@ from ai_player import AIPlayer
 import game_controller as game_controller
 from play_tree import PlayTree
 from search_algorithms import SearchAlgorithms
+from logger_config import setup_logger, board_to_string # Importe o modulo de configuração.
+
+logger = setup_logger() # Configura o logger
 
 # Global UI settings
 WINDOW_WIDTH = 700
@@ -122,50 +125,50 @@ class GameGUI:
             if game_plan_positions:
                 pieces_names = [piece[0] for piece in self.game.piece_sequence.get_full_sequence()]
                 self.game_plan = list(zip(game_plan_positions, pieces_names))
-                print("DFS Game Plan:", self.game_plan)
+                logger.info("DFS Game Plan: %s", self.game_plan)
             else:
                 self.game_plan = None
-                print("No DFS Game Plan found.")
+                logger.info("No DFS Game Plan found.")
 
         if algorithm == 'BFS':
             game_plan_positions = SearchAlgorithms.breadth_first_search(self.play_tree)
             if game_plan_positions:
                 pieces_names = [piece[0] for piece in self.game.piece_sequence.get_full_sequence()]
                 self.game_plan = list(zip(game_plan_positions, pieces_names))
-                print("BFS Game Plan:", self.game_plan)
+                logger.info("BFS Game Plan: %s", self.game_plan)
             else:
                 self.game_plan = None
-                print("No BFS Game Plan found.")
+                logger.info("No BFS Game Plan found.")
 
         elif algorithm == 'A*':
             game_plan_positions = SearchAlgorithms.a_star_search(self.play_tree)
             if game_plan_positions:
                 pieces_names = [piece[0] for piece in self.game.piece_sequence.get_full_sequence()]
                 self.game_plan = list(zip(game_plan_positions, pieces_names))
-                print("A* Game Plan:", self.game_plan)
+                logger.info("A* Game Plan: %s", self.game_plan)
             else:
                 self.game_plan = None
-                print("No A* Game Plan found.")
+                logger.info("No A* Game Plan found.")
 
         elif algorithm == 'Greedy':
             game_plan_positions = SearchAlgorithms.greedy_search(self.play_tree)
             if game_plan_positions:
                 pieces_names = [piece[0] for piece in self.game.piece_sequence.get_full_sequence()]
                 self.game_plan = list(zip(game_plan_positions, pieces_names))
-                print("Greedy Game Plan:", self.game_plan)
+                logger.info("Greedy Game Plan: %s", self.game_plan)
             else:
                 self.game_plan = None
-                print("No Greedy Game Plan found.")
+                logger.info("No Greedy Game Plan found.")
 
         elif algorithm == 'IDS':
             game_plan_positions = SearchAlgorithms.iterative_deepening_search(self.play_tree, max_depth=10) # You can adjust max_depth
             if game_plan_positions:
                 pieces_names = [piece[0] for piece in self.game.piece_sequence.get_full_sequence()]
                 self.game_plan = list(zip(game_plan_positions, pieces_names))
-                print("IDS Game Plan:", self.game_plan)
+                logger.info("IDS Game Plan: %s", self.game_plan)
             else:
                 self.game_plan = None
-                print("No IDS Game Plan found.")
+                logger.info("No IDS Game Plan found.")
 
 
         if self.game_plan:  # If a valid game plan exists, enable AI button
@@ -227,9 +230,11 @@ class GameGUI:
             self.update_score_display()
             self.update_remaining_pieces_label()
             self.status_label.config(text="Piece placed successfully.")
+            logger.info("Piece placed successfully.")
             self.check_game_status()
         else:
             self.status_label.config(text="Invalid move. Try again.")
+            logger.info("Invalid move. Try again.")
 
     def update_cell_colors(self):
         """
@@ -281,12 +286,14 @@ class GameGUI:
         Updates the score label.
         """
         self.score_label.config(text=f"Score: {self.game.score}")
+        logger.info(f"Score: {self.game.score}")
 
     def update_remaining_pieces_label(self):
         """
         Updates the remaining pieces label.
         """
         self.remaining_pieces_label.config(text=f"Remaining Pieces: {len(self.game.piece_sequence.sequence)}")
+        logger.info(f"Remaining Pieces: {len(self.game.piece_sequence.sequence)}")
 
     def manual_play_gui(self):
         """
@@ -308,10 +315,12 @@ class GameGUI:
             self.update_score_display()
             self.update_remaining_pieces_label()
             self.status_label.config(text="Piece placed successfully.")
+            logger.info("Piece placed successfully.")
             self.row_entry.delete(0, tk.END)
             self.col_entry.delete(0, tk.END)
         else:
             self.status_label.config(text="Invalid move. Try again.")
+            logger.info("Invalid move. Try again.")
 
     def play_ai_turn(self):
         """
@@ -319,7 +328,7 @@ class GameGUI:
         """
         self.check_game_status()
         # placed_positions = self.ai_player.play_step()
-        print('Game plan :', self.game_plan)
+        logger.info('Game plan : %s', self.game_plan)
         if self.game_plan:
             next_move, piece_name = self.game_plan.pop(0)
             placed_positions = self.game.play(next_move[0],  next_move[1])
@@ -331,6 +340,10 @@ class GameGUI:
                 self.update_score_display()
                 self.update_remaining_pieces_label()
                 self.status_label.config(text="AI placed a piece successfully.")
+                logger.info("AI placed a piece successfully.")
+                logger.info(
+                    f"Tabuleiro:\n{board_to_string(self.game.game_board.board)}"
+                )
                 self.check_game_status()
             else:
                 self.status_label.config(text="AI couldn't find a valid move.")
@@ -346,11 +359,13 @@ class GameGUI:
         if game_over_status == "victory":
             messagebox.showinfo("Game Over",
                                 f"Congratulations! You placed all pieces. Victory!\nScore: {self.game.score}")
+            logger.info(f"Congratulations! You placed all pieces. Victory!\nScore: {self.game.score}")
             self.manual_button.config(state=tk.DISABLED)
             self.ai_button.config(state=tk.DISABLED)
         elif game_over_status == "defeat":
             messagebox.showinfo("Game Over", f"Sorry! You have lost. Defeat!\nScore: {self.game.score}")
+            logger.info(f"Sorry! You have lost. Defeat!\nScore: {self.game.score}")
             self.manual_button.config(state=tk.DISABLED)
             self.ai_button.config(state=tk.DISABLED)
         else:
-            print("The player can keep playing")
+            logger.info("The player can keep playing")

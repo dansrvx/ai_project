@@ -1,6 +1,8 @@
 import copy
 from game_state import GameState
+from logger_config import setup_logger # Importe o modulo de configuração.
 
+logger = setup_logger() # Configura o logger
 
 class GameController:
     """
@@ -122,7 +124,7 @@ class GameController:
         for r in range(self.game_board.rows - piece_rows + 1):
             for c in range(self.game_board.cols - piece_cols + 1):
                 if self.can_place_piece(piece, r, c):
-                    print(f"There is a valid move in ({r}, {c})")
+                    logger.info(f"There is a valid move in ({r}, {c})")
                     return False  # A valid move exists
         return True  # No valid moves available
 
