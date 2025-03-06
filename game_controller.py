@@ -1,8 +1,8 @@
 import copy
 from game_state import GameState
-from logger_config import setup_logger # Importe o modulo de configuração.
+from logger_config import setup_logger 
 
-logger = setup_logger() # Configura o logger
+logger = setup_logger() 
 
 class GameController:
     """

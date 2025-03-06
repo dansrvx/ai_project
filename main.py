@@ -7,9 +7,9 @@ from game_gui import GameGUI
 from play_tree import PlayTree
 from search_algorithms import SearchAlgorithms
 
-from logger_config import setup_logger # Importe o modulo de configuração.
+from logger_config import setup_logger 
 
-logger = setup_logger() # Configura o logger
+logger = setup_logger() 
 
 def run_game_headless():
     parser = argparse.ArgumentParser(description="Block Placement Game")
@@ -19,7 +19,7 @@ def run_game_headless():
     parser.add_argument('--sequence_length', type=int, default=5, help="Sequence length")
     args = parser.parse_args() 
 
-    """Executa o jogo em modo headless."""
+    """Run the game in headless mode."""
     logger.info(f"Starting headless game with Board {args.rows} x {args.cols}. Sequence: {args.sequence_length}.")
     game_board = GameBoard(args.rows, args.cols)
     game_board.initialize_board_state(fill_density=0.1, symmetric=True, edge_clear=True, sigma=1)
@@ -40,7 +40,7 @@ def run_game_headless():
 
 
 if __name__ == '__main__':
-    #Enable this code to run all the algortims at same time.
+    #Enable this code to run all the algorithms at same time.
     #python main.py --headless --rows 10 --cols 10 --sequence 10
     #run_game_headless()
     #exit()
@@ -53,7 +53,7 @@ if __name__ == '__main__':
     )
 
     game_board = GameBoard(rows, cols)
-    game_board.initialize_board_state(fill_density=0.1, symmetric=True, edge_clear=True, sigma=1)
+    game_board.initialize_board_state(fill_density=0.3, symmetric=True, edge_clear=True, sigma=1)
     piece_sequence = PieceSequence(piece_definitions, sequence_length=sequence_length)
     game_controller = GameController(game_board, piece_sequence)
 

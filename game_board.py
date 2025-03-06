@@ -1,9 +1,9 @@
 import copy
 import numpy as np
 
-from logger_config import setup_logger # Importe o modulo de configuração.
+from logger_config import setup_logger 
 
-logger = setup_logger() # Configura o logger
+logger = setup_logger()
 
 
 # Class to represent the game board and its operations

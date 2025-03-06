@@ -2,9 +2,9 @@ import logging
 import os
 
 def setup_logger(log_file='search_log.log'):
-    """Configura o logger para gravar em arquivo e no console."""
-    logger = logging.getLogger(__name__.split('.')[0]) # Obtem o logger raiz
-    if not logger.handlers: # Verifica se já existem handlers
+    """Configures the logger to write to a file and to the console."""
+    logger = logging.getLogger(__name__.split('.')[0]) # Get the root logger
+    if not logger.handlers: # Check if there are already handlers
         logger.setLevel(logging.INFO)
 
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
@@ -24,7 +24,7 @@ def setup_logger(log_file='search_log.log'):
     return logger
 
 def board_to_string(board):
-    """Converte o tabuleiro em uma representação de string."""
+    """Converts the board into a string representation."""
     board_str = ""
     for row in board:
         board_str += " ".join(map(str, row)) + "\n"

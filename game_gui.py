@@ -1,12 +1,11 @@
 import tkinter as tk
 from tkinter import messagebox
-from ai_player import AIPlayer
 import game_controller as game_controller
 from play_tree import PlayTree
 from search_algorithms import SearchAlgorithms
-from logger_config import setup_logger, board_to_string # Importe o modulo de configuração.
+from logger_config import setup_logger, board_to_string 
 
-logger = setup_logger() # Configura o logger
+logger = setup_logger()
 
 # Global UI settings
 WINDOW_WIDTH = 700
@@ -36,10 +35,9 @@ class GameGUI:
 
     def __init__(self, root, game_controller):
         self.root = root
-        self.root.title("Block Placement Game")
+        self.root.title("Wood Block Puzzle - By DM, AO, RP [MECD AI Project]")
         self.root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
         self.game = game_controller
-        self.ai_player = AIPlayer(self.game)  # Initialize AI Player
         self.last_placed_positions = []
         self.play_tree = self.calculate_tree()
         self.game_plan = None
@@ -327,7 +325,6 @@ class GameGUI:
         Makes the AI play one step and updates the UI.
         """
         self.check_game_status()
-        # placed_positions = self.ai_player.play_step()
         logger.info('Game plan : %s', self.game_plan)
         if self.game_plan:
             next_move, piece_name = self.game_plan.pop(0)
@@ -342,7 +339,7 @@ class GameGUI:
                 self.status_label.config(text="AI placed a piece successfully.")
                 logger.info("AI placed a piece successfully.")
                 logger.info(
-                    f"Tabuleiro:\n{board_to_string(self.game.game_board.board)}"
+                    f"Board:\n{board_to_string(self.game.game_board.board)}"
                 )
                 self.check_game_status()
             else:
