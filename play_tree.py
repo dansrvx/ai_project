@@ -27,7 +27,7 @@ class PlayTreeNode:
         """Calculates the cost of placing the piece, penalizing empty inaccessible spaces."""
         empty_spaces = sum(row.count(0) for row in self.game_controller.game_board.board)
         blocked_spaces = self.count_inaccessible_spaces()
-        return empty_spaces + blocked_spaces * 5  # Higher penalty for blocked spaces
+        return (empty_spaces + blocked_spaces)  # Higher penalty for blocked spaces
 
     def calculate_heuristic(self):
         """Calculates the heuristic value for this node using GameController's scoring system."""
