@@ -113,6 +113,7 @@ class SearchAlgorithms:
         stack = [(play_tree.root, [])]  # Stack of (node, path_to_node)
         visited_boards = set()
         expanded_nodes = 0  # Contador de nós expandidos
+        best_score = float('-inf')
 
         while stack:
             current_node, path = stack.pop()
@@ -124,11 +125,16 @@ class SearchAlgorithms:
             visited_boards.add(board_tuple)
 
             if current_node.game_status == "victory":
+                score = current_node.heuristic
+                if score > best_score:
+                    best_score = score
+
                 end_time = time.time()
                 execution_time = end_time - start_time
                 logger.info(
-                    f"Depth-First Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Comprimento: {len(path + [current_node.position] if current_node.position else path)}"
+                    f"Depth-First Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Pontuação:{best_score} Comprimento: {len(path + [current_node.position] if current_node.position else path)}"
                 )
+
                 return path + [current_node.position] if current_node.position else path  # Return the path to victory
 
             for child in reversed(current_node.children):  # Reverse to maintain left-to-right order
@@ -156,6 +162,7 @@ class SearchAlgorithms:
         queue = collections.deque([(play_tree.root, [])])  # Queue of (node, path_to_node)
         visited_boards = set()
         expanded_nodes = 0  # Contador de nós expandidos
+        best_score = float('-inf')
 
         while queue:
             current_node, path = queue.popleft()
@@ -167,10 +174,13 @@ class SearchAlgorithms:
             visited_boards.add(board_tuple)
 
             if current_node.game_status == "victory":
+                score = current_node.heuristic
+                if score > best_score:
+                    best_score = score
                 end_time = time.time()
                 execution_time = end_time - start_time
                 logger.info(
-                    f"Breadth-First Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Comprimento: {len(path + [current_node.position] if current_node.position else path)}"
+                    f"Breadth-First Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Pontuação: {best_score}, Comprimento: {len(path + [current_node.position] if current_node.position else path)}"
                 )
                 return path + [current_node.position] if current_node.position else path # Return the path to victory
 
@@ -315,8 +325,19 @@ class SearchAlgorithms:
         :return: The sequence of moves (list of (row, col) tuples) leading to a victory,
                  or None if no path to victory is found within the max depth.
         """
+        start_time = time.time()
         for depth_limit in range(max_depth + 1): # Iterate through depth limits from 0 to max_depth
             result = SearchAlgorithms.depth_limited_search(play_tree, depth_limit)
             if result:
+                end_time = time.time()
+                execution_time = end_time - start_time
+                logger.info(
+                    f"Iterative Deepening Search - Tempo: {execution_time:.4f}s"
+                )
                 return result # Return the path if found at the current depth limit
+            end_time = time.time()
+            execution_time = end_time - start_time
+            logger.info(
+                    f"Iterative Deepening Search - Tempo: {execution_time:.4f}s"
+            )
         return None # No path to victory found within max_depth
