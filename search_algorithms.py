@@ -2,9 +2,9 @@ import heapq
 import collections
 import time
 
-from logger_config import setup_logger # Importe o modulo de configuração.
+from logger_config import setup_logger
 
-logger = setup_logger() # Configura o logger
+logger = setup_logger() 
 
 class SearchAlgorithms:
     """
@@ -24,7 +24,7 @@ class SearchAlgorithms:
         start_time = time.time()
         stack = [(play_tree.root, [])]  # Stack of (node, path_to_node)
         visited_boards = set()
-        expanded_nodes = 0  # Contador de nós expandidos
+        expanded_nodes = 0  
         best_score = float('-inf')
 
         while stack:
@@ -44,7 +44,7 @@ class SearchAlgorithms:
                 end_time = time.time()
                 execution_time = end_time - start_time
                 logger.info(
-                    f"Depth-First Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Pontuação:{best_score} Comprimento: {len(path + [current_node.position] if current_node.position else path)}"
+                    f"Depth-First Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score:{best_score} Length: {len(path + [current_node.position] if current_node.position else path)}"
                 )
 
                 return path + [current_node.position] if current_node.position else path  # Return the path to victory
@@ -56,7 +56,7 @@ class SearchAlgorithms:
         end_time = time.time()
         execution_time = end_time - start_time
         logger.info(
-            f"Depth-First Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Comprimento: None"
+            f"Depth-First Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Length: None"
         )
         return None  # No path to victory found
 
@@ -73,7 +73,7 @@ class SearchAlgorithms:
         start_time = time.time()
         queue = collections.deque([(play_tree.root, [])])  # Queue of (node, path_to_node)
         visited_boards = set()
-        expanded_nodes = 0  # Contador de nós expandidos
+        expanded_nodes = 0
         best_score = float('-inf')
 
         while queue:
@@ -92,7 +92,7 @@ class SearchAlgorithms:
                 end_time = time.time()
                 execution_time = end_time - start_time
                 logger.info(
-                    f"Breadth-First Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Pontuação: {best_score}, Comprimento: {len(path + [current_node.position] if current_node.position else path)}"
+                    f"Breadth-First Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {best_score}, Length: {len(path + [current_node.position] if current_node.position else path)}"
                 )
                 return path + [current_node.position] if current_node.position else path # Return the path to victory
 
@@ -102,7 +102,7 @@ class SearchAlgorithms:
                 end_time = time.time()
         execution_time = end_time - start_time
         logger.info(
-                    f"Breadth-First Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Comprimento: {len(path + [current_node.position] if current_node.position else path)}"
+                    f"Breadth-First Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Length: {len(path + [current_node.position] if current_node.position else path)}"
         )
         return None # No path to victory found
 
@@ -139,7 +139,7 @@ class SearchAlgorithms:
 
         end_time = time.time()
         execution_time = end_time - start_time
-        logger.info(f"A* Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Pontuação: {best_score}, Comprimento: {len(best_path)}")
+        logger.info(f"A* Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {best_score}, Length: {len(best_path)}")
         
         return best_path
 
@@ -176,7 +176,7 @@ class SearchAlgorithms:
 
         end_time = time.time()
         execution_time = end_time - start_time
-        logger.info(f"Greedy Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Pontuação: {best_score}, Comprimento: {len(best_path)}")
+        logger.info(f"Greedy Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {best_score}, Length: {len(best_path)}")
         return best_path    
     
     @staticmethod
@@ -209,7 +209,7 @@ class SearchAlgorithms:
                 end_time = time.time()
                 execution_time = end_time - start_time
                 logger.info(
-                    f"Depth-Limited Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Profundidade da solução: {solution_depth}, Comprimento: {len(path + [node.position] if node.position else path)}, Limite de profundidade: {depth_limit}"
+                    f"Depth-Limited Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Solution depth: {solution_depth}, Length: {len(path + [node.position] if node.position else path)}, Depth limit: {depth_limit}"
                 )
                 return path + [node.position] if node.position else path # Return path to victory
 
@@ -221,7 +221,7 @@ class SearchAlgorithms:
         end_time = time.time()
         execution_time = end_time - start_time
         logger.info(
-                f"Depth-Limited Search - Tempo: {execution_time:.4f}s, Nós expandidos: {expanded_nodes}, Profundidade da solução: {solution_depth}, Comprimento: None, Limite de profundidade: {depth_limit}"
+                f"Depth-Limited Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Solution depth: {solution_depth}, Length: None, Depth limit: {depth_limit}"
         )
         return None  # No path to victory within depth limit
 
@@ -244,12 +244,12 @@ class SearchAlgorithms:
                 end_time = time.time()
                 execution_time = end_time - start_time
                 logger.info(
-                    f"Iterative Deepening Search - Tempo: {execution_time:.4f}s"
+                    f"Iterative Deepening Search - Running time: {execution_time:.4f}s"
                 )
                 return result # Return the path if found at the current depth limit
             end_time = time.time()
             execution_time = end_time - start_time
             logger.info(
-                    f"Iterative Deepening Search - Tempo: {execution_time:.4f}s"
+                    f"Iterative Deepening Search - Running time: {execution_time:.4f}s"
             )
         return None # No path to victory found within max_depth

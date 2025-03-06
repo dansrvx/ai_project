@@ -42,8 +42,9 @@ def run_game_headless():
 if __name__ == '__main__':
     #Enable this code to run all the algorithms at same time.
     #python main.py --headless --rows 10 --cols 10 --sequence 10
-    #run_game_headless()
-    #exit()
+    run_game_headless()
+    exit()
+    
     #Basic
     rows = 5
     cols = 5
