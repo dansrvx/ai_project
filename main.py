@@ -35,8 +35,8 @@ def run_game_headless():
     logger.info(f"DFS Game Plan: {game_plan}")
     game_plan = SearchAlgorithms.breadth_first_search(play_tree)
     logger.info(f"BFS Game Plan: {game_plan}")
-    game_plan = SearchAlgorithms.iterative_deepening_search(play_tree, args.sequence_length)
-    logger.info(f"IDS Game Plan: {game_plan}")
+    #game_plan = SearchAlgorithms.iterative_deepening_search(play_tree, args.sequence_length)
+    #logger.info(f"IDS Game Plan: {game_plan}")
 
 
 if __name__ == '__main__':
