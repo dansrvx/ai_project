@@ -23,11 +23,11 @@ class PlayTreeNode:
         """Adds a child node to the current node."""
         self.children.append(child_node)
 
-    def calculate_cost(self):
-        """Calculates the cost of placing the piece, penalizing empty inaccessible spaces."""
-        empty_spaces = sum(row.count(0) for row in self.game_controller.game_board.board)
-        blocked_spaces = self.count_inaccessible_spaces()
-        return (empty_spaces + blocked_spaces)  # Higher penalty for blocked spaces
+    #def calculate_cost(self):
+    #    """Calculates the cost of placing the piece, penalizing empty inaccessible spaces."""
+    #    empty_spaces = sum(row.count(0) for row in self.game_controller.game_board.board)
+    #    blocked_spaces = self.count_inaccessible_spaces()
+    #    return (empty_spaces + blocked_spaces)  # Higher penalty for blocked spaces
 
     def calculate_heuristic(self):
         """Calculates the heuristic value for this node using GameController's scoring system."""
@@ -39,30 +39,52 @@ class PlayTreeNode:
     def evaluate_game_status(self):
         """Determines the game status using GameController's logic."""
         return self.game_controller.is_game_over()
-
-    def count_inaccessible_spaces(self):
-        """Counts the number of small empty gaps that cannot fit any available piece."""
-        inaccessible_count = 0
-        piece_sizes = self.get_piece_sizes()
-
+    
+    def calculate_cost(self):
+        """Calculates the cost based on the number of isolated empty spaces."""
+        cost = 0
         for r in range(self.game_controller.game_board.rows):
             for c in range(self.game_controller.game_board.cols):
-                if self.game_controller.game_board.board[r][c] == 0:
-                    # Check horizontal gaps
-                    if c < self.game_controller.game_board.cols - 1 and self.game_controller.game_board.board[r][
-                        c + 1] == 0:
-                        gap_size = self.measure_gap(r, c, direction="horizontal")
-                        if gap_size not in piece_sizes:
-                            inaccessible_count += 1
+                if self.game_controller.game_board.board[r][c] == 0 and self.is_isolated(r, c):
+                    cost += 1
+        return cost
+
+    def is_isolated(self, row, col):
+        """Checks if the empty space at (row, col) is isolated."""
+        for dr in range(-1, 2):
+            for dc in range(-1, 2):
+                if dr == 0 and dc == 0:
+                    continue  # Skip the current cell
+                new_row, new_col = row + dr, col + dc
+                if (0 <= new_row < self.game_controller.game_board.rows and
+                    0 <= new_col < self.game_controller.game_board.cols and
+                    self.game_controller.game_board.board[new_row][new_col] == 0):
+                    return False  # Found an adjacent empty space
+        return True  # No adjacent empty spaces found    
+
+    #def count_inaccessible_spaces(self):
+    #    """Counts the number of small empty gaps that cannot fit any available piece."""
+    #    inaccessible_count = 0
+    #    piece_sizes = self.get_piece_sizes()
+
+    #    for r in range(self.game_controller.game_board.rows):
+    #        for c in range(self.game_controller.game_board.cols):
+    #            if self.game_controller.game_board.board[r][c] == 0:
+    #                # Check horizontal gaps
+    #                if c < self.game_controller.game_board.cols - 1 and self.game_controller.game_board.board[r][
+    #                    c + 1] == 0:
+    #                    gap_size = self.measure_gap(r, c, direction="horizontal")
+    #                    if gap_size not in piece_sizes:
+    #                        inaccessible_count += 1
 
                     # Check vertical gaps
-                    if r < self.game_controller.game_board.rows - 1 and self.game_controller.game_board.board[r + 1][
-                        c] == 0:
-                        gap_size = self.measure_gap(r, c, direction="vertical")
-                        if gap_size not in piece_sizes:
-                            inaccessible_count += 1
+   #                 if r < self.game_controller.game_board.rows - 1 and self.game_controller.game_board.board[r + 1][
+    #                    c] == 0:
+     #                   gap_size = self.measure_gap(r, c, direction="vertical")
+    #                    if gap_size not in piece_sizes:
+    #                        inaccessible_count += 1
 
-        return inaccessible_count
+    #    return inaccessible_count
 
     def measure_gap(self, row, col, direction):
         """Measures the size of a continuous empty gap in the specified direction."""
