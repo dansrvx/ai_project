@@ -16,19 +16,17 @@ class SearchAlgorithms:
         """
         Performs Depth-First Search (DFS) to find a path to a victory in the play tree.
         This function explores paths as deep as possible before backtracking.
-
-        :param play_tree: The root of the play tree.
-        :return: The sequence of moves (list of (row, col) tuples) leading to a victory,
-                 or None if no path to victory is found.
         """
         start_time = time.time()
-        stack = [(play_tree.root, [])]  # Stack of (node, path_to_node)
+        stack = [(play_tree.root, [], 0)]  # Stack of (node, path_to_node, cost)
         visited_boards = set()
         expanded_nodes = 0  
         best_score = float('-inf')
+        best_cost = float('inf')
+        best_path = None
 
         while stack:
-            current_node, path = stack.pop()
+            current_node, path, cost = stack.pop()
             expanded_nodes += 1
             board_tuple = tuple(tuple(row) for row in current_node.game_controller.game_board.board)
             game_score = current_node.game_controller.score
@@ -41,25 +39,26 @@ class SearchAlgorithms:
                 score = current_node.heuristic
                 if score > best_score:
                     best_score = score
-
-                end_time = time.time()
-                execution_time = end_time - start_time
-                logger.info(
-                    f"Depth-First Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score:{game_score}, Length: {len(path + [current_node.position] if current_node.position else path)}"
-                )
-
-                return path + [current_node.position] if current_node.position else path  # Return the path to victory
+                    best_cost = cost
+                    best_path = path + [current_node.position] if current_node.position else path
 
             for child in reversed(current_node.children):  # Reverse to maintain left-to-right order
                 new_path = path + [current_node.position] if current_node.position else path
-                stack.append((child, new_path))
+                new_cost = cost + child.cost
+                stack.append((child, new_path, new_cost))
 
         end_time = time.time()
         execution_time = end_time - start_time
-        logger.info(
-            f"Depth-First Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Length: None"
-        )
-        return None  # No path to victory found
+        if best_path:
+            logger.info(
+                f"Depth-First Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score:{best_score}, Cost: {best_cost}, Length: {best_path}"
+            )
+            return best_path
+        else:
+            logger.info(
+                f"Depth-First Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: None, Cost: None, Length: None"
+            )
+            return None  # No path to victory found
 
     @staticmethod
     def breadth_first_search(play_tree):
@@ -72,13 +71,15 @@ class SearchAlgorithms:
                  or None if no path to victory is found.
         """
         start_time = time.time()
-        queue = collections.deque([(play_tree.root, [])])  # Queue of (node, path_to_node)
+        queue = collections.deque([(play_tree.root, [], 0)])  # Queue of (node, path_to_node, cost)
         visited_boards = set()
         expanded_nodes = 0
         best_score = float('-inf')
+        best_cost = float('inf')
+        best_path = None
 
         while queue:
-            current_node, path = queue.popleft()
+            current_node, path, cost = queue.popleft()
             expanded_nodes += 1
             board_tuple = tuple(tuple(row) for row in current_node.game_controller.game_board.board)
             game_score = current_node.game_controller.score
@@ -90,65 +91,26 @@ class SearchAlgorithms:
                 score = current_node.heuristic
                 if score > best_score:
                     best_score = score
-                end_time = time.time()
-                execution_time = end_time - start_time
-                logger.info(
-                    f"Breadth-First Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {game_score}, Length: {len(path + [current_node.position] if current_node.position else path)}"
-                )
-                return path + [current_node.position] if current_node.position else path # Return the path to victory
+                    best_cost = cost
+                    best_path = path + [current_node.position] if current_node.position else path
 
             for child in current_node.children:
                 new_path = path + [current_node.position] if current_node.position else path
-                queue.append((child, new_path))
-                end_time = time.time()
-        execution_time = end_time - start_time
-        logger.info(
-                    f"Breadth-First Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Length: {len(path + [current_node.position] if current_node.position else path)}"
-        )
-        return None # No path to victory found
-
-    @staticmethod
-    def a_star_search_old(play_tree):
-        """
-        Performs A* search to find the best sequence of moves in the play tree based on cost and heuristic.
-        Only considers paths that result in a victory.
-
-        :param play_tree: The root of the play tree.
-        :return: A list of (row, col) tuples representing the sequence of best moves leading to victory, or [] if no such path exists.
-        """
-        start_time = time.time()
-        expanded_nodes = 0
-        priority_queue = []
-        heapq.heappush(priority_queue,
-                       ((play_tree.root.heuristic + play_tree.root.cost), id(play_tree.root), play_tree.root, []))  # (cost + heuristic, unique id, node, path)
-        best_path = []
-        best_score = float('-inf')
-        score = 0
-        while priority_queue:
-            _, _, node, path = heapq.heappop(priority_queue)
-            expanded_nodes += 1
-            game_score = node.game_controller.score
-
-            if node.game_status == "victory":  # Only consider paths that lead to a win
-                score = node.heuristic + node.cost  # A* formula: f(n) = h(n) - g(n)
-                if score > best_score:
-                    best_score = score
-                    best_path = path + [node.position]  # Store the path to the best victory node
-                #end_time = time.time()
-                #execution_time = end_time - start_time
-                #logger.info(f"A* Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {game_score}, Length: {len(best_path)}")                    
-                #return best_path 
-            
-
-            for child in node.children:
-                heapq.heappush(priority_queue,
-                               ((child.heuristic + child.cost), id(child), child, path + [child.position]))
+                new_cost = cost + child.cost
+                queue.append((child, new_path, new_cost))
 
         end_time = time.time()
         execution_time = end_time - start_time
-        logger.info(f"A* Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {game_score}, Length: {len(best_path)}")                    
-                
-        return best_path
+        if best_path:
+            logger.info(
+                f"Breadth-First Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {best_score}, Cost: {best_cost}, Length: {best_path}"
+            )
+            return best_path
+        else:
+            logger.info(
+                f"Breadth-First Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: None, Cost: None, Length: None"
+            )
+            return None # No path to victory found
 
     @staticmethod
     def a_star_search(play_tree):
@@ -162,23 +124,37 @@ class SearchAlgorithms:
         expanded_nodes = 0
         priority_queue = []
         root = play_tree.root
-        heapq.heappush(priority_queue, (root.cost + root.heuristic, id(root), root, [], root.cost)) # Corrected f(n)
+        heapq.heappush(priority_queue, (-root.heuristic + root.cost, id(root), root, [], root.cost, set())) # Changed f(n) and initial push
         best_path = []
         best_cost = float('inf')
-        best_final_score = 0
+        best_final_score = float('-inf') # Initialize to negative infinity for maximization
+        visited_paths = {} # Track visited paths and states
         while priority_queue:
-            _, _, node, path, cost_so_far = heapq.heappop(priority_queue)
+            f_n, _, node, path, cost_so_far, visited_states = heapq.heappop(priority_queue) # Get f(n)
             expanded_nodes += 1
             game_score = node.game_controller.score
+            board_tuple = tuple(tuple(row) for row in node.game_controller.game_board.board)
+            logger.debug(f"A* Node: Cost={cost_so_far}, Heuristic={node.heuristic}, Total={-f_n}, Game Score={game_score}, Board={node.game_controller.game_board.board}") # Log adicional
             if node.game_status == "victory":
-                if cost_so_far < best_cost:
+                if node.heuristic > best_final_score: # Use heuristic for comparison
                     best_cost = cost_so_far
-                    best_path = path + [node.position]
-                    best_final_score = game_score
+                    best_path = path #+ [node.position]
+                    best_final_score = node.heuristic # Store heuristic (score)
             for child in node.children:
                 new_cost = cost_so_far + child.cost
-                estimated_total_cost = new_cost + child.heuristic # Corrected f(n)
-                heapq.heappush(priority_queue, (estimated_total_cost, id(child), child, path + [child.position], new_cost))
+                estimated_total_cost = child.heuristic - new_cost # Changed f(n) calculation
+                child_board_tuple = tuple(tuple(row) for row in child.game_controller.game_board.board)
+                child_path_tuple = tuple(path + [child.position]) # Create a tuple of the path
+
+                # Check if the path and state have been visited
+                if child_path_tuple in visited_paths and visited_paths[child_path_tuple] == child_board_tuple:
+                    continue
+                
+                new_visited_states = visited_states.copy()
+                new_visited_states.add(child_board_tuple)
+                
+                heapq.heappush(priority_queue, (-estimated_total_cost, id(child), child, path + [child.position], new_cost, new_visited_states)) # Changed push
+                visited_paths[child_path_tuple] = child_board_tuple # Add path and state to visited paths
         end_time = time.time()
         execution_time = end_time - start_time
         if best_path:
@@ -210,64 +186,55 @@ class SearchAlgorithms:
                 score = node.heuristic  # Greedy Search: f(n) = h(n)
                 if score > best_heuristic_score:
                     best_heuristic_score = score
-                    best_path = path + [node.position]  # Store the path to the best victory node
+                    best_path = path #+ [node.position]  # Store the path to the best victory node
             for child in node.children:
                 heapq.heappush(priority_queue, (-child.heuristic, id(child), child, path + [child.position]))
         end_time = time.time()
         execution_time = end_time - start_time
         if best_path:
-            logger.info(f"Greedy Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Heuristic Score: {best_heuristic_score}, Length: {len(best_path)}")
+            logger.info(f"Greedy Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {best_heuristic_score}, Length: {len(best_path)}") # Changed to best heuristic score
         else:
             logger.info(f"Greedy Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, No solution found.")
-        return best_path    
-    
+        return best_path
         
     @staticmethod
     def depth_limited_search(play_tree, depth_limit):
         """
         Performs Depth-Limited Search (DLS) to find a path to victory within a given depth limit.
-
-        :param play_tree: The root of the play tree.
-        :param depth_limit: The maximum depth to search.
-        :return: The sequence of moves (list of (row, col) tuples) leading to a victory within the depth limit,
-                 or None if no path to victory is found within the limit.
         """
         start_time = time.time()
-        stack = [(play_tree.root, [], 0)]  # Stack of (node, path_to_node, current_depth)
+        stack = [(play_tree.root, [], 0, 0)]  # Stack of (node, path, depth, cost)
         visited_boards = set()
         expanded_nodes = 0
-        solution_depth = -1
+        best_solution = None
 
         while stack:
-            node, path, depth = stack.pop()
-            board_tuple = tuple(tuple(row) for row in node.game_controller.game_board.board)
+            node, path, depth, cost = stack.pop()
             expanded_nodes += 1
-            game_score = node.game_controller.score
-
+            board_tuple = tuple(tuple(row) for row in node.game_controller.game_board.board)
             if board_tuple in visited_boards:
                 continue
             visited_boards.add(board_tuple)
 
             if node.game_status == "victory":
-                solution_depth = depth
-                end_time = time.time()
-                execution_time = end_time - start_time
-                logger.info(
-                    f"Depth-Limited Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {game_score}, Solution depth: {solution_depth}, Length: {len(path + [node.position] if node.position else path)}, Depth limit: {depth_limit}"
-                )
-                return path + [node.position] if node.position else path # Return path to victory
+                best_solution = (path + [node.position] if node.position else path, node.game_controller.score, cost)
+                break
 
             if depth < depth_limit:
                 for child in node.children:
                     new_path = path + [node.position] if node.position else path
-                    stack.append((child, new_path, depth + 1))
+                    new_cost = cost + child.cost
+                    stack.append((child, new_path, depth + 1, new_cost))
 
         end_time = time.time()
         execution_time = end_time - start_time
-        logger.info(
-                f"Depth-Limited Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {game_score}, Solution depth: {solution_depth}, Length: None, Depth limit: {depth_limit}"
-        )
-        return None  # No path to victory within depth limit
+        if best_solution:
+            path, score, cost = best_solution
+            logger.info(f"DLS - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {score}, Cost: {cost}, Length: {path}, Depth limit: {depth_limit}")
+            return path
+        else:
+            logger.info(f"DLS - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: None, Cost: None, Length: None, Depth limit: {depth_limit}")
+            return None
 
     
     @staticmethod
@@ -275,25 +242,30 @@ class SearchAlgorithms:
         """
         Performs Iterative Deepening Search (IDS) by repeatedly calling Depth-Limited Search
         with increasing depth limits.
-
-        :param play_tree: The root of the play tree.
-        :param max_depth: The maximum depth to explore.
-        :return: The sequence of moves (list of (row, col) tuples) leading to a victory,
-                 or None if no path to victory is found within the max depth.
         """
         start_time = time.time()
-        for depth_limit in range(max_depth + 1): # Iterate through depth limits from 0 to max_depth
+        expanded_nodes = 0
+        best_solution = None
+        best_depth = None
+        total_cost = 0
+
+        for depth_limit in range(max_depth + 1):
             result = SearchAlgorithms.depth_limited_search(play_tree, depth_limit)
             if result:
-                end_time = time.time()
-                execution_time = end_time - start_time
-                logger.info(
-                    f"Iterative Deepening Search - Running time: {execution_time:.4f}s"
-                )
-                return result # Return the path if found at the current depth limit
-            end_time = time.time()
-            execution_time = end_time - start_time
-            logger.info(
-                    f"Iterative Deepening Search - Running time: {execution_time:.4f}s"
-            )
-        return None # No path to victory found within max_depth
+                best_solution = (result, play_tree.root.game_controller.score, total_cost)
+                best_depth = depth_limit
+                break
+            # Calculate total cost (sum of costs from each DLS call)
+            # Assuming each node has a 'cost' attribute
+            if play_tree.root.children:
+                total_cost += sum(child.cost for child in play_tree.root.children)
+
+        end_time = time.time()
+        execution_time = end_time - start_time
+        if best_solution:
+            path, score, cost = best_solution
+            logger.info(f"IDS - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {score}, Cost: {cost}, Length: {path}, Best depth: {best_depth}, Max depth: {max_depth}")
+            return path
+        else:
+            logger.info(f"IDS - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: None, Cost: None, Length: None, Max depth: {max_depth}")
+            return None
