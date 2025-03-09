@@ -1,5 +1,6 @@
 import heapq
 import collections
+import tracemalloc
 import time
 import copy
 
@@ -12,22 +13,38 @@ class SearchAlgorithms:
     Implements various search algorithms to find the best move in the play tree.
     """
 
+    import tracemalloc
+
+    import tracemalloc
+
     @staticmethod
     def depth_first_search(game_controller):
         """
         Performs Depth-First Search (DFS) to find a path to a victory (collect all diamonds) by
         dynamically generating the search tree.
         :param game_controller: The GameController representing the current game state.
-        :return: The game plan (list of (row, col) tuples) leading to a victory,
-                 or None if no path to victory is found.
+        :return: A dictionary containing the following statistics:
+            - 'plan': The game plan (list of (row, col) tuples) leading to a victory, or None if no path to victory is found.
+            - 'nodes_explored': The number of nodes explored during the search.
+            - 'execution_time': The time required for the execution of the search.
+            - 'memory_usage': The peak memory usage during the search.
+            - 'path_length': The number of moves required to win (length of the path), or None if no path is found.
+            - 'success': A boolean indicating whether a game plan was found (True) or not (False).
         """
+        tracemalloc.start()  # Start memory tracing
         start_time = time.time()
         expanded_nodes = 0
         visited_boards = set()
         initial_diamonds = game_controller.calculate_total_diamonds_in_game()
         stack = [(game_controller, [], initial_diamonds)]  # (game_controller, path, diamonds_left)
-        # first_move = None
-        while stack:
+
+        plan = None
+        path_length = None
+        success = False
+        memory_usage = 0
+        victory = False
+
+        while stack and not victory:
             current_controller, path, diamonds_left = stack.pop()
             expanded_nodes += 1
 
@@ -39,17 +56,11 @@ class SearchAlgorithms:
 
             # Check if the branch results in a victory path.
             if diamonds_left == 0:
-                # if(len(path)>0):
-                #    first_move = path[0]
-                # else:
-                #    first_move = None
+                plan = path
+                path_length = len(path)
+                success = True
+                victory = True
 
-                end_time = time.time()
-                execution_time = end_time - start_time
-                logger.info(
-                    f"DFS - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(path)}"
-                )
-                return path
             # No possible moves to create
             if current_controller.is_defeat():
                 continue
@@ -72,99 +83,117 @@ class SearchAlgorithms:
 
         end_time = time.time()
         execution_time = end_time - start_time
-        logger.info(
-            f"DFS - No victory found. Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}"
-        )
-        return None
+        # Find the peak memory usage on the game
+        _, peak = tracemalloc.get_traced_memory()
+        memory_usage = peak / 1024
+
+        tracemalloc.stop()  # Stop memory tracing
+        if (success):
+            logger.info(
+                f"DFS - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(plan)}, Memory Used: {memory_usage:.2f} KB"
+            )
+        else:
+            logger.info(
+                f"DFS - No victory found. Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Memory Used: {memory_usage:.2f} KB"
+            )
+        statistics = {
+            'plan': plan,
+            'nodes_explored': expanded_nodes,
+            'execution_time': execution_time,
+            'memory_usage': memory_usage,
+            'path_length': path_length,
+            'success': success
+        }
+        return statistics
 
     @staticmethod
-    def breadth_first_search(play_tree):
+    def breadth_first_search(game_controller):
         """
-        Performs Breadth-First Search (BFS) to find the shortest path to a victory in the play tree.
-        This function explores all possible moves level by level.
-
-        :param play_tree: The root of the play tree.
-        :return: The sequence of moves (list of (row, col) tuples) leading to a victory,
-                 or None if no path to victory is found.
+        Performs Breadth-First Search (BFS) to find a path to a victory (collect all diamonds) by
+        dynamically generating the search tree.
+        :param game_controller: The GameController representing the current game state.
+        :return: A dictionary containing the following statistics:
+            - 'plan': The game plan (list of (row, col) tuples) leading to a victory, or None if no path to victory is found.
+            - 'nodes_explored': The number of nodes explored during the search.
+            - 'execution_time': The time required for the execution of the search.
+            - 'memory_usage': The peak memory usage during the search.
+            - 'path_length': The number of moves required to win (length of the path), or None if no path is found.
+            - 'success': A boolean indicating whether a game plan was found (True) or not (False).
         """
+        tracemalloc.start()  # Start memory tracing
         start_time = time.time()
-        queue = collections.deque([(play_tree.root, [])])  # Queue of (node, path_to_node)
-        visited_boards = set()
         expanded_nodes = 0
-        best_score = float('-inf')
+        visited_boards = set()
+        initial_diamonds = game_controller.calculate_total_diamonds_in_game()
+        queue = collections.deque([(game_controller, [], initial_diamonds)])  # (game_controller, path, diamonds_left)
 
-        while queue:
-            current_node, path = queue.popleft()
+        plan = None
+        path_length = None
+        success = False
+        memory_usage = 0
+        victory = False
+
+        while queue and not victory:
+            current_controller, path, diamonds_left = queue.popleft()
             expanded_nodes += 1
-            board_tuple = tuple(tuple(row) for row in current_node.game_controller.game_board.board)
-            game_score = current_node.game_controller.score
+
+            # Convert board to tuple for loop detection
+            board_tuple = tuple(tuple(row) for row in current_controller.game_board.board)
             if board_tuple in visited_boards:
                 continue
             visited_boards.add(board_tuple)
 
-            if current_node.game_status == "victory":
-                score = current_node.heuristic
-                if score > best_score:
-                    best_score = score
-                end_time = time.time()
-                execution_time = end_time - start_time
-                logger.info(
-                    f"Breadth-First Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {game_score}, Length: {len(path + [current_node.position] if current_node.position else path)}"
-                )
-                return path + [current_node.position] if current_node.position else path # Return the path to victory
+            # Check if the branch results in a victory path.
+            if diamonds_left == 0:
+                plan = path
+                path_length = len(path)
+                success = True
+                victory = True
 
-            for child in current_node.children:
-                new_path = path + [current_node.position] if current_node.position else path
-                queue.append((child, new_path))
-                end_time = time.time()
-        execution_time = end_time - start_time
-        logger.info(
-                    f"Breadth-First Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Length: {len(path + [current_node.position] if current_node.position else path)}"
-        )
-        return None # No path to victory found
+            # No possible moves to create
+            if current_controller.is_defeat():
+                continue
 
-    @staticmethod
-    def a_star_search_old(play_tree):
-        """
-        Performs A* search to find the best sequence of moves in the play tree based on cost and heuristic.
-        Only considers paths that result in a victory.
+            # Generate moves
+            piece_name, piece = current_controller.piece_sequence.peek_next_piece()
+            for r in range(current_controller.game_board.rows - len(piece) + 1):
+                for c in range(current_controller.game_board.cols - len(piece[0]) + 1):
+                    if current_controller.can_place_piece(piece, r, c):
+                        # Create a copy of the game_controller for each step
+                        new_controller = copy.deepcopy(current_controller)
+                        # Create a copy of the piece to allow it to place
+                        piece_copy = copy.deepcopy(piece)
 
-        :param play_tree: The root of the play tree.
-        :return: A list of (row, col) tuples representing the sequence of best moves leading to victory, or [] if no such path exists.
-        """
-        start_time = time.time()
-        expanded_nodes = 0
-        priority_queue = []
-        heapq.heappush(priority_queue,
-                       ((play_tree.root.heuristic + play_tree.root.cost), id(play_tree.root), play_tree.root, []))  # (cost + heuristic, unique id, node, path)
-        best_path = []
-        best_score = float('-inf')
-        score = 0
-        while priority_queue:
-            _, _, node, path = heapq.heappop(priority_queue)
-            expanded_nodes += 1
-            game_score = node.game_controller.score
-
-            if node.game_status == "victory":  # Only consider paths that lead to a win
-                score = node.heuristic + node.cost  # A* formula: f(n) = h(n) - g(n)
-                if score > best_score:
-                    best_score = score
-                    best_path = path + [node.position]  # Store the path to the best victory node
-                #end_time = time.time()
-                #execution_time = end_time - start_time
-                #logger.info(f"A* Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {game_score}, Length: {len(best_path)}")                    
-                #return best_path 
-            
-
-            for child in node.children:
-                heapq.heappush(priority_queue,
-                               ((child.heuristic + child.cost), id(child), child, path + [child.position]))
+                        new_controller.play(r, c)
+                        new_diamonds = new_controller.calculate_total_diamonds_in_game()
+                        # Add the path for the other functions to work correctly
+                        new_path = path + [(r, c)]
+                        queue.append((new_controller, new_path, new_diamonds))
 
         end_time = time.time()
         execution_time = end_time - start_time
-        logger.info(f"A* Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {game_score}, Length: {len(best_path)}")                    
-                
-        return best_path
+        # Find the peak memory usage on the game
+        _, peak = tracemalloc.get_traced_memory()
+        memory_usage = peak / 1024
+
+        tracemalloc.stop()  # Stop memory tracing
+        if (success):
+            logger.info(
+                f"BFS - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(plan)}, Memory Used: {memory_usage:.2f} KB"
+            )
+        else:
+            logger.info(
+                f"BFS - No victory found. Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Memory Used: {memory_usage:.2f} KB"
+            )
+        statistics = {
+            'plan': plan,
+            'nodes_explored': expanded_nodes,
+            'execution_time': execution_time,
+            'memory_usage': memory_usage,
+            'path_length': path_length,
+            'success': success
+        }
+        return statistics
 
     @staticmethod
     def a_star_search(play_tree):
