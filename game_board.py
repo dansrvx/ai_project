@@ -91,3 +91,21 @@ class GameBoard:
         new_board = GameBoard(self.rows, self.cols)  # Create a new GameBoard object
         new_board.board = copy.deepcopy(self.board, memo)  # Deep copy the board
         return new_board  # Return the deep copied GameBoard
+
+    def calculate_total_diamonds(self):
+        """
+        Calculates the total number of diamonds present on the game board.
+        Returns 0 if the board is empty or invalid.
+
+        :return: The total number of diamonds (int), or 0 if the board is empty or invalid.
+        """
+        if not self.board or not isinstance(self.board, list):
+            return 0  # Return 0 if the board is empty or not a list
+
+        if not all(isinstance(row, list) for row in self.board):
+            return 0  # Return 0 if any row is not a list
+
+        total_diamonds = 0
+        for row in self.board:
+            total_diamonds += row.count(2)  # Count the occurrences of '2' (diamonds) in each row
+        return total_diamonds

@@ -96,3 +96,19 @@ class PieceSequence:
         """
         return self.sequence.copy()
 
+    def calculate_total_diamonds(self):
+        """
+        Calculates the total number of diamonds present in the current sequence of pieces.
+        Returns 0 if the sequence is empty.
+
+        :return: The total number of diamonds (int), or 0 if the sequence is empty.
+        """
+        if not self.sequence:
+            return 0  # Return 0 if the sequence is empty
+
+        total_diamonds = 0
+        for _, piece_shape in self.sequence:
+            for row in piece_shape:
+                total_diamonds += row.count(2)  # Count the occurrences of '2' (diamonds) in each row
+        return total_diamonds
+

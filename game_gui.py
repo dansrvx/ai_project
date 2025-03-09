@@ -65,7 +65,7 @@ class GameGUI:
 
         # --- Game-related attributes ---
         self.game = None
-        self.last_placed_positions = []
+        # self.last_placed_positions = [] delete last placed piece highlight
         self.play_tree = None
         self.game_plan = None
 
@@ -88,6 +88,7 @@ class GameGUI:
         self.remaining_pieces_label = None
         self.status_label = None
         self.next_piece_label = None
+        self.total_diamonds_label = None
 
         # --- UI Elements - Input Fields and Variables (Parameter Selection) ---
         self.row_entry = None
@@ -165,6 +166,8 @@ class GameGUI:
         self.update_board_display()
         self.update_next_piece_display()
         self.update_score_display()
+        self.update_remaining_pieces_label()
+        self.update_total_diamonds_label()
 
         # Initialize parameter selection UI
         self.parameter_frame.tkraise()  # Make sure parameter frame is visible at start
@@ -176,12 +179,16 @@ class GameGUI:
         self.score_bar_frame.grid_rowconfigure(0, weight=1)
         self.score_bar_frame.grid_columnconfigure(0, weight=1)
         self.score_bar_frame.grid_columnconfigure(1, weight=1)
+        self.score_bar_frame.grid_columnconfigure(2, weight=1)
 
         self.score_label = tk.Label(self.score_bar_frame, text="Score: 0", font=FONT_MEDIUM)
         self.score_label.grid(row=0, column=0, padx=10, pady=1, sticky="nsw")
 
         self.remaining_pieces_label = tk.Label(self.score_bar_frame, text="Remaining Pieces: 0", font=FONT_MEDIUM)
         self.remaining_pieces_label.grid(row=0, column=1, padx=10, pady=1, sticky="nse")
+
+        self.total_diamonds_label = tk.Label(self.score_bar_frame, text="Total Diamonds: 0", font=FONT_MEDIUM)
+        self.total_diamonds_label.grid(row=0, column=2, padx=10, pady=1, sticky="nse")
 
 
     def initialize_configuration_area(self):
@@ -420,23 +427,27 @@ class GameGUI:
         try:
             rows = int(self.row_entry.get())
             cols = int(self.col_entry.get())
-            fill_density = self.density_slider.get() / 100.0  # Get value from slider (0-100) and convert to 0.0-1.0
+            fill_density = self.density_slider.get() / 100.0
             diamond_rate = self.diamond_slider.get()
             sequence_length = int(self.sequence_entry.get())
             symmetric = self.symmetric_var.get()
-        except ValueError:
-            messagebox.showerror("Error", "Invalid input: Please enter valid numbers.")
+
+            # Input Validation
+            if not (0 < rows <= MAX_BOARD_SIZE and 0 < cols <= MAX_BOARD_SIZE):
+                raise ValueError(f"Board dimensions must be between 1 and {MAX_BOARD_SIZE}")
+            if not (0 <= fill_density <= 1):
+                raise ValueError("Fill density must be between 0 and 1")
+            if not (0 <= diamond_rate <= 100):
+                raise ValueError("Diamond Rate must be between 0 and 100")
+            if not (0 < sequence_length <= MAX_SEQUENCE):
+                raise ValueError(f"Sequence length must be between 1 and {MAX_SEQUENCE}")
+
+        except ValueError as e:
+            messagebox.showerror("Error", str(e))
             return
 
-        # Basic input validation
-        if not (0 < rows <= MAX_BOARD_SIZE and 0 < cols <= MAX_BOARD_SIZE):
-            messagebox.showerror("Error", "Board dimensions must be between 1 and " + str(MAX_BOARD_SIZE) + ".")
-            return
-        if not (0 <= fill_density <= 1 and 0 <= diamond_rate <= 100):
-            messagebox.showerror("Error", "Fill Density must be between 0 and 1, and Diamond Rate between 0 and 100.")
-            return
-        if not (0 < sequence_length <= MAX_SEQUENCE):
-            messagebox.showerror("Error", "Sequence length must be between 1 and "+str(MAX_SEQUENCE) + ".")
+        except Exception as e:  # Catch other potential exceptions
+            messagebox.showerror("Error", f"An unexpected error occurred: {str(e)}")
             return
 
         # Initialize game board and piece sequence
@@ -455,6 +466,7 @@ class GameGUI:
         self.update_next_piece_display()
         self.update_score_display()
         self.update_remaining_pieces_label()
+        self.update_total_diamonds_label()
 
         # Disable parameter input elements and the accept button, but keep the frame visible
         self.disable_parameter_inputs()
@@ -603,7 +615,8 @@ class GameGUI:
         """
         Updates the color of a specific cell based on its value and whether it was last placed.
         """
-        if self.game:
+        '''
+        if self.game:            
             if (row, col) in self.last_placed_positions:
                 color = CELL_COLORS["last_placed"]
             else:
@@ -612,6 +625,12 @@ class GameGUI:
                 cell_value = board[row][col]
                 color = CELL_COLORS.get(cell_value, "white")
             self.cells[(row, col)].config(bg=color)
+        '''
+        # Access board from the game controller
+        board = self.game.game_board.board
+        cell_value = board[row][col]
+        color = CELL_COLORS.get(cell_value, "white")
+        self.cells[(row, col)].config(bg=color)
 
     def update_next_piece_display(self):
         """
@@ -667,6 +686,14 @@ class GameGUI:
             self.remaining_pieces_label.config(text=f"Remaining Pieces: {len(self.game.piece_sequence.sequence)}")
             logger.info(f"Remaining Pieces: {len(self.game.piece_sequence.sequence)}")
 
+    def update_total_diamonds_label(self):
+        """
+        Updates the total diamonds label.
+        """
+        if self.game:
+            self.total_diamonds_label.config(text=f"Total Diamonds: {self.game.total_diamonds}")
+            logger.info(f"Total Diamonds: {self.game.total_diamonds}")
+
     def manual_play_gui(self):
         """
         Handles manual piece placement from user input.
@@ -695,7 +722,7 @@ class GameGUI:
         if self.game:
             placed_positions = self.game.play(row, col)
             if placed_positions:
-                self.last_placed_positions = placed_positions
+                # self.last_placed_positions = placed_positions
                 self.status_label.config(text="Piece placed successfully.")
                 logger.info("Piece placed successfully.")
                 return True
@@ -733,6 +760,7 @@ class GameGUI:
             self.update_next_piece_display()
             self.update_score_display()
             self.update_remaining_pieces_label()
+            self.update_total_diamonds_label()
             logger.info(f"Board:\n{board_to_string(self.game.game_board.board)}")
             self.check_game_status()
 

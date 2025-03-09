@@ -1,8 +1,8 @@
 import copy
-from game_state import GameState
-from logger_config import setup_logger 
+from logger_config import setup_logger
 
-logger = setup_logger() 
+logger = setup_logger()
+
 
 class GameController:
     """
@@ -16,6 +16,7 @@ class GameController:
         self.game_board = game_board
         self.piece_sequence = piece_sequence
         self.score = 0
+        self.total_diamonds = self.calculate_total_diamonds_in_game()  # Initialize total_diamonds
 
     def can_place_piece(self, piece, top_left_row, top_left_col):
         """
@@ -74,6 +75,7 @@ class GameController:
         total_diamond_score = diamond_score_rows + diamond_score_cols
 
         self.score += (total_lines_cleared * 10) + total_diamond_score
+        self.update_total_diamonds() # Update total_diamonds after clearing lines
         return total_lines_cleared
 
     def clear_rows(self):
@@ -146,6 +148,22 @@ class GameController:
                         placed_positions.append((row + r, col + c))
 
             self.piece_sequence.get_next_piece()
+            self.update_total_diamonds()  # Update total_diamonds after placing a piece
             return placed_positions
 
         return None
+
+    def calculate_total_diamonds_in_game(self):
+        """
+        Calculates the total number of diamonds in the game (board + piece sequence).
+        """
+        board_diamonds = self.game_board.calculate_total_diamonds()
+        sequence_diamonds = self.piece_sequence.calculate_total_diamonds()
+        return board_diamonds + sequence_diamonds
+
+    def update_total_diamonds(self):
+        """
+        Updates the total_diamonds attribute with the current number of diamonds in the game.
+        """
+        self.total_diamonds = self.calculate_total_diamonds_in_game()
+        logger.info(f"Total Diamonds Updated: {self.total_diamonds}")
