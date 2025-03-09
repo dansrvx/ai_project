@@ -195,42 +195,116 @@ class SearchAlgorithms:
         }
         return statistics
 
+    import heapq
+    import tracemalloc
+
     @staticmethod
-    def a_star_search(play_tree):
+    def a_star_search(game_controller):
         """
-        Performs A* search to find the best sequence of moves in the play tree based on cost (empty spaces) and heuristic (score).
-        Only considers paths that result in a victory.
-        :param play_tree: The root of the play tree.
-        :return: A list of (row, col) tuples representing the sequence of best moves leading to victory, or [] if no such path exists.
+        Performs A* search to find a path to a victory (collect all diamonds) by
+        dynamically generating the search tree.
+        :param game_controller: The GameController representing the current game state.
+        :return: A dictionary containing the following statistics:
+            - 'plan': The game plan (list of (row, col) tuples) leading to a victory, or None if no path to victory is found.
+            - 'nodes_explored': The number of nodes explored during the search.
+            - 'execution_time': The time required for the execution of the search.
+            - 'memory_usage': The peak memory usage during the search.
+            - 'path_length': The number of moves required to win (length of the path), or None if no path is found.
+            - 'success': A boolean indicating whether a game plan was found (True) or not (False).
         """
+        tracemalloc.start()  # Start memory tracing
         start_time = time.time()
         expanded_nodes = 0
-        priority_queue = []
-        root = play_tree.root
-        heapq.heappush(priority_queue, (root.cost + root.heuristic, id(root), root, [], root.cost)) # Corrected f(n)
-        best_path = []
-        best_cost = float('inf')
-        best_final_score = 0
+        visited_boards = set()
+        initial_diamonds = game_controller.calculate_total_diamonds_in_game()
+        # Use a tiebreaker to push to the heap
+        priority_queue = [(0, id(game_controller), game_controller, [], 0)]  # (f_score, unique_id, game_controller, path, cost)
+
+        plan = None
+        path_length = None
+        success = False
+        memory_usage = 0
+
         while priority_queue:
-            _, _, node, path, cost_so_far = heapq.heappop(priority_queue)
+            f_score, _, current_controller, path, cost = heapq.heappop(priority_queue)
             expanded_nodes += 1
-            game_score = node.game_controller.score
-            if node.game_status == "victory":
-                if cost_so_far < best_cost:
-                    best_cost = cost_so_far
-                    best_path = path + [node.position]
-                    best_final_score = game_score
-            for child in node.children:
-                new_cost = cost_so_far + child.cost
-                estimated_total_cost = new_cost + child.heuristic # Corrected f(n)
-                heapq.heappush(priority_queue, (estimated_total_cost, id(child), child, path + [child.position], new_cost))
+
+            # Convert board to tuple for loop detection
+            board_tuple = tuple(tuple(row) for row in current_controller.game_board.board)
+            if board_tuple in visited_boards:
+                continue
+            visited_boards.add(board_tuple)
+
+            # Check if the branch results in a victory path.
+            if current_controller.calculate_total_diamonds_in_game() == 0:
+                plan = path
+                path_length = len(path)
+                success = True
+
+                end_time = time.time()
+                execution_time = end_time - start_time
+
+                # Find the peak memory usage on the game
+                _, peak = tracemalloc.get_traced_memory()
+                memory_usage = peak / 1024
+
+                logger.info(
+                    f"A* - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(path)}, Memory Used: {memory_usage:.2f} KB"
+                )
+                break  # Stop the loop after the plan is found.
+
+            # No possible moves to create
+            if current_controller.is_defeat():
+                continue
+
+            # Generate moves
+            piece_name, piece = current_controller.piece_sequence.peek_next_piece()
+            for r in range(current_controller.game_board.rows - len(piece) + 1):
+                for c in range(current_controller.game_board.cols - len(piece[0]) + 1):
+                    if current_controller.can_place_piece(piece, r, c):
+                        # Create a copy of the game_controller for each step
+                        new_controller = copy.deepcopy(current_controller)
+                        # Create a copy of the piece to allow it to place
+                        piece_copy = copy.deepcopy(piece)
+
+                        new_controller.play(r, c)
+                        new_diamonds = new_controller.calculate_total_diamonds_in_game()
+
+                        # Add the path for the other functions to work correctly
+                        new_path = path + [(r, c)]
+                        new_cost = cost + 1  # Increment the cost by 1 on each move
+
+                        # Calculate heuristic: diamonds_collected - cost_so_far
+                        heuristic = initial_diamonds - new_diamonds + new_cost
+
+                        f_score = heuristic  # A* evaluation function: f(n) = g(n) + h(n)
+                        heapq.heappush(priority_queue, (f_score, id(new_controller), new_controller, new_path, new_cost))
+
         end_time = time.time()
         execution_time = end_time - start_time
-        if best_path:
-            logger.info(f"A* Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {best_final_score}, Best cost: {best_cost}, Length: {len(best_path)}")
+        # Find the peak memory usage on the game
+        _, peak = tracemalloc.get_traced_memory()
+        memory_usage = peak / 1024
+
+        tracemalloc.stop()  # Stop memory tracing
+        if (success):
+            logger.info(
+                f"A* - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(plan)}, Memory Used: {memory_usage:.2f} KB"
+            )
         else:
-            logger.info(f"A* Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, No solution found.")
-        return best_path
+            logger.info(
+                f"A* - No victory found. Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Memory Used: {memory_usage:.2f} KB"
+            )
+
+        statistics = {
+            'plan': plan,
+            'nodes_explored': expanded_nodes,
+            'execution_time': execution_time,
+            'memory_usage': memory_usage,
+            'path_length': path_length,
+            'success': success
+        }
+        return statistics
 
     @staticmethod
     def greedy_search(play_tree):

@@ -312,7 +312,7 @@ class GameGUI:
         self.algorithm_statistics_frame.grid_rowconfigure(2, weight=2)
         self.algorithm_statistics_frame.grid_rowconfigure(3, weight=2)
         self.algorithm_statistics_frame.grid_rowconfigure(4, weight=2)
-        columns = ["Algorithm", "Time (s)", "Memory (KB)", "Nodes", "Length", "Success"]
+        columns = ["Algorithm", "Time (s)", "Memory (KB)", "Nodes", "Moves", "Success"]
         for i in range(len(columns)):
             self.algorithm_statistics_frame.grid_columnconfigure(i, weight=1)
             header_label = tk.Label(self.algorithm_statistics_frame, text=columns[i], font=FONT_SMALL, relief=tk.FLAT, padx=2, pady=2)
@@ -552,9 +552,9 @@ class GameGUI:
         statistics = search_algorithm(self.game)
 
         if statistics['plan']:
-            self.game_plan =  statistics['plan']
+            self.game_plan = statistics['plan']
             logger.info(f"{algorithm} Game Plan calculated: {self.game_plan}")
-            self.algorithm_statistics[algorithm] = statistics
+            self.algorithm_statistics[algorithm] = statistics  # Overwrite if it exists
             self.show_game_over_message("Game plan calculated successfully")
             self.update_statistics_frame()
         else:
