@@ -65,9 +65,40 @@ class GameController:
         return True
 
     def clear_completed_lines(self):
+        """Clears completed rows and columns and calculates diamond-based score."""
+        board = self.game_board.board
+        rows_cleared = [r for r in range(self.game_board.rows) if all(cell in [1, 2] for cell in board[r])]
+        cols_cleared = [c for c in range(self.game_board.cols) if all(board[r][c] in [1, 2] for r in range(self.game_board.rows))]
+
+        # Calculate diamond score before clearing
+        diamond_score_rows = sum(board[r].count(2) * 10 for r in rows_cleared)
+        diamond_score_cols = sum(10 for c in cols_cleared for r in range(self.game_board.rows) if board[r][c] == 2)
+        total_diamond_score = diamond_score_rows + diamond_score_cols
+
         """
         Clears completed rows and columns, updating the score based on the number of diamonds.
         """
+        total_lines_cleared = len(rows_cleared) + len(cols_cleared)
+        self.score += (total_lines_cleared * 10) + total_diamond_score
+
+        # Clear rows
+        for r in rows_cleared:
+            self.game_board.board[r] = [0] * self.game_board.cols
+
+        # Clear columns (must be done after clear rows)
+        for c in cols_cleared:
+            for r in range(self.game_board.rows):
+                self.game_board.board[r][c] = 0
+
+    '''
+    def clear_completed_lines(self):
+        """
+        Clears completed rows and columns, updating the score based on the number of diamonds.
+        """
+        board = self.game_board.board
+        
+
+
         rows_cleared, diamond_score_rows = self.clear_rows()
         cols_cleared, diamond_score_cols = self.clear_cols()
 
@@ -77,7 +108,9 @@ class GameController:
         self.score += (total_lines_cleared * 10) + total_diamond_score
         self.update_total_diamonds() # Update total_diamonds after clearing lines
         return total_lines_cleared
-
+    
+    
+    
     def clear_rows(self):
         """
         Clears completed rows and calculates diamond-based score.
@@ -105,6 +138,7 @@ class GameController:
                 self.game_board.board[r][c] = 0
 
         return len(cols_to_clear), diamond_score
+    '''
 
     def is_game_over(self):
         """

@@ -114,6 +114,7 @@ class GameGUI:
         self.a_star_button = None
         self.a_greedy_button = None
         self.ids_button = None
+        self.restart_button = None
 
         # Game board cells
         self.cells = {}
@@ -312,7 +313,11 @@ class GameGUI:
         """
         self.board_frame = tk.Frame(self.game_area_frame, borderwidth=5, relief=tk.GROOVE)
         self.board_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
+        self.board_frame.grid_rowconfigure(0, weight=1)  # Allows to center the content
+        self.board_frame.grid_columnconfigure(0, weight=1)  # Allows to center the content
         self.board_frame.grid_propagate(False)
+
+
 
     def initialize_next_piece_display(self):
         """
@@ -345,12 +350,14 @@ class GameGUI:
         """
         self.game_button_frame = tk.Frame(self.input_frame, borderwidth=5, relief=tk.GROOVE)
         self.game_button_frame.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
-        self.game_button_frame.grid_rowconfigure(0, weight=1)
+        self.game_button_frame.grid_rowconfigure(0, weight=10)
         self.game_button_frame.grid_rowconfigure(1, weight=1)
+        self.game_button_frame.grid_rowconfigure(2, weight=1)
         self.game_button_frame.grid_columnconfigure(0, weight=1)
+        self.game_button_frame.grid_propagate(False)
 
         self.manual_play_frame = tk.Frame(self.game_button_frame, bd=2, relief=tk.FLAT)
-        self.manual_play_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
+        self.manual_play_frame.grid(row=0, column=0, sticky="nsew", padx=0, pady=0)
         self.manual_play_frame.grid_rowconfigure(0, weight=1)
         self.manual_play_frame.grid_columnconfigure(0, weight=1)
         self.manual_play_frame.grid_columnconfigure(1, weight=1)
@@ -361,17 +368,20 @@ class GameGUI:
 
         tk.Label(self.manual_play_frame, text="Row:", font=FONT_MEDIUM).grid(row=0, column=0, sticky="nsew")
         self.row_entry_play = tk.Entry(self.manual_play_frame, width=5, font=FONT_MEDIUM)
-        self.row_entry_play.grid(row=0, column=1, sticky="nsew", padx=2, pady=2)
+        self.row_entry_play.grid(row=0, column=1, sticky="nsew", padx=5, pady=1)
 
         tk.Label(self.manual_play_frame, text="Col:", font=FONT_MEDIUM).grid(row=0, column=2, sticky="nsew")
         self.col_entry_play = tk.Entry(self.manual_play_frame, width=5, font=FONT_MEDIUM)
-        self.col_entry_play.grid(row=0, column=3, sticky="nsew", padx=2, pady=2)
+        self.col_entry_play.grid(row=0, column=3, sticky="nsew", padx=5, pady=1)
 
         self.manual_button = tk.Button(self.manual_play_frame, text="Play Manually", command=self.manual_play_gui, font=FONT_LARGE, **GAME_BUTTON_STYLE)
-        self.manual_button.grid(row=0, column=4, sticky="nsew", padx=2, pady=2)
+        self.manual_button.grid(row=0, column=4, sticky="nsew", padx=5, pady=1)
 
         self.ai_button = tk.Button(self.game_button_frame, text="Play AI", command=self.play_ai_turn, font=FONT_LARGE, state=tk.DISABLED, **GAME_BUTTON_STYLE)
-        self.ai_button.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
+        self.ai_button.grid(row=1, column=0, sticky="nsew", padx=5, pady=1)
+
+        self.restart_button = tk.Button(self.game_button_frame, text="Restart Game", command=self.restart_game, font=FONT_LARGE, **GAME_BUTTON_STYLE)
+        self.restart_button.grid(row=2, column=0, sticky="nsew", padx=5, pady=1)
 
     def initialize_plan_buttons(self):
         """
@@ -385,6 +395,7 @@ class GameGUI:
         self.plan_button_frame.grid_rowconfigure(2, weight=1)
         self.plan_button_frame.grid_columnconfigure(0, weight=1)
         self.plan_button_frame.grid_columnconfigure(1, weight=1)
+        self.plan_button_frame.grid_propagate(False)
 
         self.dfs_button = tk.Button(self.plan_button_frame, text="DFS Plan", command=lambda: self.get_game_plan('DFS'), font=FONT_LARGE, **PLAN_BUTTON_STYLE)
         self.dfs_button.grid(row=0, column=0, sticky="nsew", padx=2, pady=2)  # Use grid within this frame
@@ -551,7 +562,7 @@ class GameGUI:
 
     def create_board_grid(self):
         """
-        Creates the board grid.
+        Creates the board grid with row and column labels integrated into a single grid.
         """
         # Destroy old cells before creating a new board
         for cell in self.cells.values():
@@ -560,19 +571,29 @@ class GameGUI:
 
         # Access board from the game controller
         board = self.game.game_board.board
+        rows = self.game.game_board.rows
+        cols = self.game.game_board.cols
+
+        # Configure grid rows and columns
+        for i in range(rows + 1):
+            self.board_frame.grid_rowconfigure(i, weight=1)  # Each row can expand
+        for j in range(cols + 1):
+            self.board_frame.grid_columnconfigure(j, weight=1)  # Each col can expand
 
         # Create column labels
-        for c in range(self.game.game_board.cols):
-            tk.Label(self.board_frame, text=str(c), font=FONT_SMALL).grid(row=0, column=c + 1, padx=1, pady=1)
+        for c in range(cols):
+            col_label = tk.Label(self.board_frame, text=str(c), font=FONT_SMALL)
+            col_label.grid(row=0, column=c + 1, padx=0, pady=0, sticky="nsew")
 
         # Create row labels and cells
-        for r in range(self.game.game_board.rows):
-            tk.Label(self.board_frame, text=str(r), font=FONT_SMALL).grid(row=r + 1, column=0, padx=1, pady=1)
-            for c in range(self.game.game_board.cols):
+        for r in range(rows):
+            row_label = tk.Label(self.board_frame, text=str(r), font=FONT_SMALL)
+            row_label.grid(row=r + 1, column=0, padx=0, pady=0, sticky="nsew")
+            for c in range(cols):
                 if (r, c) not in self.cells:
                     cell_label = tk.Label(self.board_frame, width=2, height=1, relief=tk.SOLID,
                                           borderwidth=CELL_BORDER_WIDTH, font=FONT_SMALL)
-                    cell_label.grid(row=r + 1, column=c + 1, padx=1, pady=1)
+                    cell_label.grid(row=r + 1, column=c + 1, padx=1, pady=1, sticky="nsew")
                     cell_label.bind("<Button-1>", lambda event, row=r, col=c: self.on_cell_click(row, col))
                     cell_label.bind("<Enter>", lambda event, row=r, col=c: self.on_cell_enter(row, col))
                     cell_label.bind("<Leave>", lambda event, row=r, col=c: self.on_cell_leave(row, col))
@@ -846,3 +867,42 @@ class GameGUI:
         self.disable_game_buttons()
         if hasattr(self, 'cells'):
             self.disable_board()
+
+    def enable_parameter_inputs(self):
+        """
+        Enables parameter input elements.
+        """
+        self.row_entry.config(state=tk.NORMAL)
+        self.col_entry.config(state=tk.NORMAL)
+        self.density_slider.config(state=tk.NORMAL)
+        self.diamond_slider.config(state=tk.NORMAL)
+        self.sequence_entry.config(state=tk.NORMAL)
+        self.symmetric_check.config(state=tk.NORMAL)
+        self.accept_button.config(state=tk.NORMAL)
+
+    def restart_game(self):
+        """
+        Restarts the game with the same parameters.
+        """
+        # Re-enable parameter input elements
+        self.enable_parameter_inputs()
+
+        # Reset the game state
+        self.game = None
+        self.game_plan = None
+
+        # Re-initialize the UI
+        self.cells = {}  # Reset cells for the new board
+        self.disable_board_and_buttons()
+        self.update_board_display()
+        self.update_next_piece_display()
+        self.update_score_display()
+        self.update_remaining_pieces_label()
+        self.update_total_diamonds_label()
+
+        # Clear the board and generate the pieces.
+        # self.accept_parameters()
+
+        logger.info("Game restarted.")
+
+
