@@ -5,7 +5,7 @@ from piece import PieceSequence, piece_definitions
 from game_controller import GameController
 from game_gui import GameGUI
 from play_tree import PlayTree
-from search_algorithms import SearchAlgorithms
+from search_algorithms_old import SearchAlgorithms
 
 from logger_config import setup_logger 
 

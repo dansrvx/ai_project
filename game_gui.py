@@ -438,27 +438,23 @@ class GameGUI:
         try:
             rows = int(self.row_entry.get())
             cols = int(self.col_entry.get())
-            fill_density = self.density_slider.get() / 100.0
+            fill_density = self.density_slider.get() / 100.0  # Get value from slider (0-100) and convert to 0.0-1.0
             diamond_rate = self.diamond_slider.get()
             sequence_length = int(self.sequence_entry.get())
             symmetric = self.symmetric_var.get()
-
-            # Input Validation
-            if not (0 < rows <= MAX_BOARD_SIZE and 0 < cols <= MAX_BOARD_SIZE):
-                raise ValueError(f"Board dimensions must be between 1 and {MAX_BOARD_SIZE}")
-            if not (0 <= fill_density <= 1):
-                raise ValueError("Fill density must be between 0 and 1")
-            if not (0 <= diamond_rate <= 100):
-                raise ValueError("Diamond Rate must be between 0 and 100")
-            if not (0 < sequence_length <= MAX_SEQUENCE):
-                raise ValueError(f"Sequence length must be between 1 and {MAX_SEQUENCE}")
-
-        except ValueError as e:
-            messagebox.showerror("Error", str(e))
+        except ValueError:
+            messagebox.showerror("Error", "Invalid input: Please enter valid numbers.")
             return
 
-        except Exception as e:  # Catch other potential exceptions
-            messagebox.showerror("Error", f"An unexpected error occurred: {str(e)}")
+        # Basic input validation
+        if not (0 < rows <= MAX_BOARD_SIZE and 0 < cols <= MAX_BOARD_SIZE):
+            messagebox.showerror("Error", "Board dimensions must be between 1 and " + str(MAX_BOARD_SIZE) + ".")
+            return
+        if not (0 <= fill_density <= 1 and 0 <= diamond_rate <= 100):
+            messagebox.showerror("Error", "Fill Density must be between 0 and 1, and Diamond Rate between 0 and 100.")
+            return
+        if not (0 < sequence_length <= MAX_SEQUENCE):
+            messagebox.showerror("Error", "Sequence length must be between 1 and " + str(MAX_SEQUENCE) + ".")
             return
 
         # Initialize game board and piece sequence
@@ -528,18 +524,15 @@ class GameGUI:
             logger.error(f"Invalid algorithm: {algorithm}")
             return
 
-        if algorithm == 'IDS':
-            game_plan_positions = SearchAlgorithms.iterative_deepening_search(self.play_tree, max_depth=len(self.game.piece_sequence.sequence))
-        else:
-            game_plan_positions = search_algorithm(self.play_tree)
+        self.game_plan = search_algorithm(self.game)
 
-        if game_plan_positions:
-            pieces_names = [piece[0] for piece in self.game.piece_sequence.get_full_sequence()]
-            self.game_plan = list(zip(game_plan_positions, pieces_names))
-            logger.info(f"{algorithm} Game Plan: {self.game_plan}")
+        if self.game_plan:
+            logger.info(f"{algorithm} Game Plan calculated: {self.game_plan}")
         else:
             self.game_plan = None
             logger.info(f"No {algorithm} Game Plan found.")
+            self.show_game_over_message("Sorry! No game plan found! You can play the game manually")
+
 
         self.update_ai_button_state()
 
@@ -756,21 +749,27 @@ class GameGUI:
     def play_ai_turn(self):
         """
         Makes the AI play one step and updates the UI.
+        Ends the game and shows a message if no game plan is found.
         """
         if not self.game:
             messagebox.showerror("Error", "Game not initialized. Please set game parameters first.")
             return
 
         self.check_game_status()
-        logger.info('Game plan : %s', self.game_plan)
-        if self.game_plan:
-            next_move, piece_name = self.game_plan.pop(0)
-            if self.manual_play(next_move[0], next_move[1]):
-                self.update_ui_after_move()
-            else:
-                self.status_label.config(text="AI couldn't find a valid move.")
+
+        if not self.game_plan:
+            self.show_game_over_message("AI has no precalculated plan. Please select a planning algorithm first.")
+            self.disable_game_buttons()
+            return
+
+        next_move = self.game_plan.pop(0)
+        if self.manual_play(next_move[0], next_move[1]):
+            self.update_ui_after_move()
+            logger.info(f"AI played move {next_move}. Remaining game plan: {self.game_plan}")
         else:
-            self.status_label.config(text="No game plan available.")
+            self.status_label.config(text="AI couldn't find a valid move in the generated game plan. Game Over.")
+            self.disable_game_buttons()
+            self.show_game_over_message("AI couldn't find a valid move in the generated game plan. Game Over.")
 
     def update_ui_after_move(self):
         """
@@ -826,7 +825,6 @@ class GameGUI:
         Enables the game buttons.
         """
         self.manual_button.config(state=tk.NORMAL)
-        self.ai_button.config(state=tk.NORMAL)
         self.dfs_button.config(state=tk.NORMAL)
         self.bfs_button.config(state=tk.NORMAL)
         self.a_star_button.config(state=tk.NORMAL)

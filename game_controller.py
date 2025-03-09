@@ -155,13 +155,19 @@ class GameController:
         """
         Checks if there are no valid moves left, leading to defeat.
         """
-        piece_name, piece = self.piece_sequence.peek_next_piece()
+        next_piece_info = self.piece_sequence.peek_next_piece()
+
+        # If there are no more pieces, then it is not possible to make a play.
+        if next_piece_info is None:
+            return True
+
+        piece_name, piece = next_piece_info
         piece_rows, piece_cols = len(piece), len(piece[0])
 
         for r in range(self.game_board.rows - piece_rows + 1):
             for c in range(self.game_board.cols - piece_cols + 1):
                 if self.can_place_piece(piece, r, c):
-                    logger.info(f"There is a valid move in ({r}, {c})")
+                    # logger.info(f"There is a valid move in ({r}, {c})")
                     return False  # A valid move exists
         return True  # No valid moves available
 
@@ -201,4 +207,4 @@ class GameController:
         Updates the total_diamonds attribute with the current number of diamonds in the game.
         """
         self.total_diamonds = self.calculate_total_diamonds_in_game()
-        logger.info(f"Total Diamonds Updated: {self.total_diamonds}")
+        # logger.info(f"Total Diamonds Updated: {self.total_diamonds}")

@@ -1,6 +1,7 @@
 import heapq
 import collections
 import time
+import copy
 
 from logger_config import setup_logger
 
@@ -12,54 +13,69 @@ class SearchAlgorithms:
     """
 
     @staticmethod
-    def depth_first_search(play_tree):
+    def depth_first_search(game_controller):
         """
-        Performs Depth-First Search (DFS) to find a path to a victory in the play tree.
-        This function explores paths as deep as possible before backtracking.
-
-        :param play_tree: The root of the play tree.
-        :return: The sequence of moves (list of (row, col) tuples) leading to a victory,
+        Performs Depth-First Search (DFS) to find a path to a victory (collect all diamonds) by
+        dynamically generating the search tree.
+        :param game_controller: The GameController representing the current game state.
+        :return: The game plan (list of (row, col) tuples) leading to a victory,
                  or None if no path to victory is found.
         """
         start_time = time.time()
-        stack = [(play_tree.root, [])]  # Stack of (node, path_to_node)
+        expanded_nodes = 0
         visited_boards = set()
-        expanded_nodes = 0  
-        best_score = float('-inf')
-
+        initial_diamonds = game_controller.calculate_total_diamonds_in_game()
+        stack = [(game_controller, [], initial_diamonds)]  # (game_controller, path, diamonds_left)
+        # first_move = None
         while stack:
-            current_node, path = stack.pop()
+            current_controller, path, diamonds_left = stack.pop()
             expanded_nodes += 1
-            board_tuple = tuple(tuple(row) for row in current_node.game_controller.game_board.board)
-            game_score = current_node.game_controller.score
 
+            # Convert board to tuple for loop detection
+            board_tuple = tuple(tuple(row) for row in current_controller.game_board.board)
             if board_tuple in visited_boards:
                 continue
             visited_boards.add(board_tuple)
 
-            if current_node.game_status == "victory":
-                score = current_node.heuristic
-                if score > best_score:
-                    best_score = score
+            # Check if the branch results in a victory path.
+            if diamonds_left == 0:
+                # if(len(path)>0):
+                #    first_move = path[0]
+                # else:
+                #    first_move = None
 
                 end_time = time.time()
                 execution_time = end_time - start_time
                 logger.info(
-                    f"Depth-First Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score:{game_score}, Length: {len(path + [current_node.position] if current_node.position else path)}"
+                    f"DFS - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(path)}"
                 )
+                return path
+            # No possible moves to create
+            if current_controller.is_defeat():
+                continue
 
-                return path + [current_node.position] if current_node.position else path  # Return the path to victory
+            # Generate moves
+            piece_name, piece = current_controller.piece_sequence.peek_next_piece()
+            for r in range(current_controller.game_board.rows - len(piece) + 1):
+                for c in range(current_controller.game_board.cols - len(piece[0]) + 1):
+                    if current_controller.can_place_piece(piece, r, c):
+                        # Create a copy of the game_controller for each step
+                        new_controller = copy.deepcopy(current_controller)
+                        # Create a copy of the piece to allow it to place
+                        piece_copy = copy.deepcopy(piece)
 
-            for child in reversed(current_node.children):  # Reverse to maintain left-to-right order
-                new_path = path + [current_node.position] if current_node.position else path
-                stack.append((child, new_path))
+                        new_controller.play(r, c)
+                        new_diamonds = new_controller.calculate_total_diamonds_in_game()
+                        # Add the path for the other functions to work correctly
+                        new_path = path + [(r, c)]
+                        stack.append((new_controller, new_path, new_diamonds))
 
         end_time = time.time()
         execution_time = end_time - start_time
         logger.info(
-            f"Depth-First Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Length: None"
+            f"DFS - No victory found. Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}"
         )
-        return None  # No path to victory found
+        return None
 
     @staticmethod
     def breadth_first_search(play_tree):
