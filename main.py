@@ -42,22 +42,10 @@ def run_game_headless():
 if __name__ == '__main__':
     #Enable this code to run all the algorithms at same time.
     #python main.py --headless --rows 10 --cols 10 --sequence 10
-    run_game_headless()
-    exit()
+    # run_game_headless()
+    # exit()
     
     #Basic
-    rows = 5
-    cols = 5
-    sequence_length = 5
-    logger.info(
-                    f"Starting the Game with a Board {rows} x {cols}. Sequence: {sequence_length}"
-    )
-
-    game_board = GameBoard(rows, cols)
-    game_board.initialize_board_state(fill_density=0.3, symmetric=True, edge_clear=True, sigma=1)
-    piece_sequence = PieceSequence(piece_definitions, sequence_length=sequence_length)
-    game_controller = GameController(game_board, piece_sequence)
-
     root = tk.Tk()
-    gui = GameGUI(root, game_controller)
+    gui = GameGUI(root)
     root.mainloop()
