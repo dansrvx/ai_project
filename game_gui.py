@@ -342,8 +342,6 @@ class GameGUI:
         self.board_frame.grid_columnconfigure(0, weight=1)  # Allows to center the content
         self.board_frame.grid_propagate(False)
 
-
-
     def initialize_next_piece_display(self):
         """
         Initializes the next piece display frame.
@@ -626,15 +624,18 @@ class GameGUI:
         """
         Creates the board grid with row and column labels integrated into a single grid.
         """
+
+
         # Destroy old cells before creating a new board
         for cell in self.cells.values():
             cell.destroy()
         self.cells = {}
 
         # Access board from the game controller
-        board = self.game.game_board.board
         rows = self.game.game_board.rows
         cols = self.game.game_board.cols
+
+        print(rows,cols)
 
         # Configure grid rows and columns
         for i in range(rows + 1):
@@ -947,17 +948,44 @@ class GameGUI:
         self.symmetric_check.config(state=tk.NORMAL)
         self.accept_button.config(state=tk.NORMAL)
 
+    def destroy_board(self):
+        """Destroys all board-related widgets and configurations."""
+
+        # Destroy existing cells
+        for cell in self.cells.values():
+            cell.destroy()
+        self.cells = {}
+
+        # Clear grid configurations (remove old row/column configurations)
+        if self.board_frame:  # Check if board_frame exists
+            for i in range(self.board_frame.grid_size()[0]):  # Iterate through existing rows
+                self.board_frame.grid_rowconfigure(i, weight=0)  # Reset row weight
+            for j in range(self.board_frame.grid_size()[1]):  # Iterate through existing cols
+                self.board_frame.grid_columnconfigure(j, weight=0)  # Reset col weight
+
+            # Destroy labels
+            for widget in self.board_frame.winfo_children():
+                widget.destroy()
+
     def restart_game(self):
-        """
-        Restarts the game with the same parameters.
-        """
+        """Restarts the game with the same parameters."""
+
         # Re-enable parameter input elements
         self.enable_parameter_inputs()
 
         # Reset the game state
         self.game = None
         self.game_plan = None
-        self.algorithm_statistics = {}
+
+        # Clear algorithm statistics
+        self.algorithm_statistics = {}  # Clear the stored statistics
+        self.update_statistics_frame()  # Update the UI to reflect the cleared statistics
+
+        # Update Plan label
+        self.plan_label.config(text=f"Game Plan: N/A")
+
+        # Destroy the old board
+        self.destroy_board()
 
         # Re-initialize the UI
         self.cells = {}  # Reset cells for the new board
@@ -967,11 +995,6 @@ class GameGUI:
         self.update_score_display()
         self.update_remaining_pieces_label()
         self.update_total_diamonds_label()
-        self.update_statistics_frame()
-
-        # Clear the board and generate the pieces.
-        # self.accept_parameters()
 
         logger.info("Game restarted.")
-
 
