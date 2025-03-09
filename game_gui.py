@@ -291,13 +291,13 @@ class GameGUI:
         self.statistics_frame.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
 
         # Configure grid rows
-        self.statistics_frame.grid_rowconfigure(0, weight=2)  # Row for plan
-        self.statistics_frame.grid_rowconfigure(1, weight=6)  # Row for table
+        self.statistics_frame.grid_rowconfigure(0, weight=0)  # Row for plan
+        self.statistics_frame.grid_rowconfigure(1, weight=1)  # Row for table
         self.statistics_frame.grid_columnconfigure(0, weight=1)  # Full Width
         self.statistics_frame.grid_propagate(False)  # Prevent automatic resizing
 
         # Plan Label
-        self.plan_frame = tk.Frame(self.statistics_frame, borderwidth=5, relief=tk.GROOVE)
+        self.plan_frame = tk.Frame(self.statistics_frame, borderwidth=5, relief=tk.GROOVE, height=50)
         self.plan_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
         self.plan_frame.grid_rowconfigure(0, weight=1)
         self.plan_frame.grid_columnconfigure(0, weight=1)
