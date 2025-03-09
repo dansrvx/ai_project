@@ -110,11 +110,12 @@ class GameController:
         """
         Determines if the game is over by checking victory or defeat conditions.
         """
-        if not self.piece_sequence.sequence:
+        if self.total_diamonds == 0:
             return "victory"
-        if self.is_defeat():
+        elif not self.piece_sequence.sequence or self.is_defeat():
             return "defeat"
-        return None
+        else:
+            return None
 
     def is_defeat(self):
         """

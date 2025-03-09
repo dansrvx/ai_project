@@ -771,7 +771,7 @@ class GameGUI:
         if self.game:
             game_over_status = self.game.is_game_over()
             if game_over_status == "victory":
-                self.show_game_over_message("Congratulations! You placed all pieces. Victory!")
+                self.show_game_over_message("Congratulations! You collected all the diamonds. Victory!")
                 self.disable_game_buttons()
             elif game_over_status == "defeat":
                 self.show_game_over_message("Sorry! You have lost. Defeat!")
