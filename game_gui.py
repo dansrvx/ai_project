@@ -68,7 +68,7 @@ class GameGUI:
         # self.last_placed_positions = [] delete last placed piece highlight
         # self.play_tree = None
         self.game_plan = None
-        self.algorithm_statistics = []
+        self.algorithm_statistics = {}
 
         # --- UI Elements - Frames ---
         self.general_frame = None
@@ -307,16 +307,16 @@ class GameGUI:
 
         self.algorithm_statistics_frame = tk.Frame(self.statistics_frame, borderwidth=5, relief=tk.GROOVE)
         self.algorithm_statistics_frame.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
-        self.algorithm_statistics_frame.grid_rowconfigure(0, weight=2)
-        self.algorithm_statistics_frame.grid_rowconfigure(1, weight=2)
-        self.algorithm_statistics_frame.grid_rowconfigure(2, weight=2)
-        self.algorithm_statistics_frame.grid_rowconfigure(3, weight=2)
-        self.algorithm_statistics_frame.grid_rowconfigure(4, weight=2)
-        columns = ["Algorithm", "Time (s)", "Memory (KB)", "Nodes", "Moves", "Success"]
+        self.algorithm_statistics_frame.grid_rowconfigure(0, weight=1)
+        self.algorithm_statistics_frame.grid_rowconfigure(1, weight=1)
+        self.algorithm_statistics_frame.grid_rowconfigure(2, weight=1)
+        self.algorithm_statistics_frame.grid_rowconfigure(3, weight=1)
+        self.algorithm_statistics_frame.grid_rowconfigure(4, weight=1)
+        columns = ["Algorithm", "Time (s)", "Memory (KB)", "Nodes", "Moves", "Score"]
         for i in range(len(columns)):
             self.algorithm_statistics_frame.grid_columnconfigure(i, weight=1)
-            header_label = tk.Label(self.algorithm_statistics_frame, text=columns[i], font=FONT_SMALL, relief=tk.FLAT, padx=2, pady=2)
-            header_label.grid(row=0, column=i, sticky="nsew", padx=5, pady=5)
+            header_label = tk.Label(self.algorithm_statistics_frame, text=columns[i], font=FONT_SMALL, borderwidth=1, relief="solid", padx=2, pady=2, bg="black", fg="white")
+            header_label.grid(row=0, column=i, sticky="nsew", padx=1, pady=5)
 
 
     def initialize_game_area(self):
@@ -499,6 +499,7 @@ class GameGUI:
         self.update_score_display()
         self.update_remaining_pieces_label()
         self.update_total_diamonds_label()
+        self.check_game_status()
 
         # Disable parameter input elements and the accept button, but keep the frame visible
         self.disable_parameter_inputs()
@@ -555,13 +556,13 @@ class GameGUI:
             self.game_plan = statistics['plan']
             logger.info(f"{algorithm} Game Plan calculated: {self.game_plan}")
             self.algorithm_statistics[algorithm] = statistics  # Overwrite if it exists
-            self.show_game_over_message("Game plan calculated successfully")
+            messagebox.showinfo("Plan calculated successfully", "The AI has calculated the game plan.")
             self.update_statistics_frame()
         else:
             self.game_plan = None
             logger.info(f"No {algorithm} Game Plan found.")
             self.algorithm_statistics[algorithm] = None
-            self.show_game_over_message("Sorry! The AI could not found a successful game plan. You can play manually!")
+            messagebox.showinfo("Failed to calculate a game plan", "The AI could not calculate the game plan. The user can play manually")
         self.update_ai_button_state()
 
     def update_statistics_frame(self):
@@ -571,33 +572,38 @@ class GameGUI:
         # Update Plan label
         last_algorithm = list(self.algorithm_statistics.keys())[-1] if self.algorithm_statistics else None
         if last_algorithm:
-            self.plan_label.config(text=f"Game Plan: {self.game_plan}")
+            self.plan_label.config(text=f"Game Plan {last_algorithm}: {self.game_plan}")
         else:
             self.plan_label.config(text=f"Game Plan: N/A")
 
-        # Remove previous data to add the new one
-        for widget in self.statistics_frame.winfo_children():
-            if widget.grid_info()['row'] > 1:
+        # Remove existing data rows
+        for widget in self.algorithm_statistics_frame.winfo_children():
+            if widget.grid_info()['row'] > 0:  # Remove all rows after header
                 widget.destroy()
 
-        row_num = 2
+        if not self.algorithm_statistics:
+            # Display "No statistics available" message
+            no_stats_label = tk.Label(self.algorithm_statistics_frame, text="No statistics available.", font=FONT_MEDIUM)
+            no_stats_label.grid(row=1, column=0, columnspan=6, sticky="nsew")
+        else:
+            row_num = 1
 
-        # Populate table with statistics
-        for algorithm, statistics in self.algorithm_statistics.items():
-            if statistics:
-                data = [
-                    algorithm,
-                    f"{statistics['execution_time']:.4f}",
-                    f"{statistics['memory_usage']:.2f}",
-                    str(statistics['nodes_explored']),
-                    str(statistics['path_length']),
-                    str(statistics['success'])
-                ]
+            # Populate table with statistics
+            for algorithm, statistics in self.algorithm_statistics.items():
+                if statistics:
+                    data = [
+                        algorithm,
+                        f"{statistics['execution_time']:.4f}",
+                        f"{statistics['memory_usage']:.2f}",
+                        str(statistics['nodes_explored']),
+                        str(statistics['path_length']),
+                        str(statistics['final_score'])
+                    ]
 
-                for i, value in enumerate(data):
-                    data_label = tk.Label(self.algorithm_statistics_frame, text=value, font=FONT_SMALL, borderwidth=1, relief="solid")
-                    data_label.grid(row=row_num, column=i, sticky="nsew", padx=1, pady=1)
-                row_num += 1
+                    for i, value in enumerate(data):
+                        data_label = tk.Label(self.algorithm_statistics_frame, text=value, font=FONT_SMALL, borderwidth=1, relief="solid")
+                        data_label.grid(row=row_num, column=i, sticky="nsew", padx=1, pady=1)
+                    row_num += 1
 
     def update_ai_button_state(self):
         """
@@ -951,6 +957,7 @@ class GameGUI:
         # Reset the game state
         self.game = None
         self.game_plan = None
+        self.algorithm_statistics = {}
 
         # Re-initialize the UI
         self.cells = {}  # Reset cells for the new board
@@ -960,6 +967,7 @@ class GameGUI:
         self.update_score_display()
         self.update_remaining_pieces_label()
         self.update_total_diamonds_label()
+        self.update_statistics_frame()
 
         # Clear the board and generate the pieces.
         # self.accept_parameters()

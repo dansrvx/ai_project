@@ -43,6 +43,7 @@ class SearchAlgorithms:
         success = False
         memory_usage = 0
         victory = False
+        final_score = 0
 
         while stack and not victory:
             current_controller, path, diamonds_left = stack.pop()
@@ -60,6 +61,7 @@ class SearchAlgorithms:
                 path_length = len(path)
                 success = True
                 victory = True
+                final_score = current_controller.score
 
             # No possible moves to create
             if current_controller.is_defeat():
@@ -102,7 +104,8 @@ class SearchAlgorithms:
             'execution_time': execution_time,
             'memory_usage': memory_usage,
             'path_length': path_length,
-            'success': success
+            'success': success,
+            'final_score': final_score
         }
         return statistics
 
@@ -132,6 +135,7 @@ class SearchAlgorithms:
         success = False
         memory_usage = 0
         victory = False
+        final_score = 0
 
         while queue and not victory:
             current_controller, path, diamonds_left = queue.popleft()
@@ -149,6 +153,7 @@ class SearchAlgorithms:
                 path_length = len(path)
                 success = True
                 victory = True
+                final_score = current_controller.score
 
             # No possible moves to create
             if current_controller.is_defeat():
@@ -191,7 +196,8 @@ class SearchAlgorithms:
             'execution_time': execution_time,
             'memory_usage': memory_usage,
             'path_length': path_length,
-            'success': success
+            'success': success,
+            'final_score': final_score
         }
         return statistics
 
@@ -224,6 +230,7 @@ class SearchAlgorithms:
         path_length = None
         success = False
         memory_usage = 0
+        final_score = 0
 
         while priority_queue:
             f_score, _, current_controller, path, cost = heapq.heappop(priority_queue)
@@ -240,6 +247,7 @@ class SearchAlgorithms:
                 plan = path
                 path_length = len(path)
                 success = True
+                final_score = current_controller.score
 
                 end_time = time.time()
                 execution_time = end_time - start_time
@@ -302,43 +310,110 @@ class SearchAlgorithms:
             'execution_time': execution_time,
             'memory_usage': memory_usage,
             'path_length': path_length,
-            'success': success
+            'success': success,
+            'final_score': final_score
         }
         return statistics
 
     @staticmethod
-    def greedy_search(play_tree):
+    def greedy_search(game_controller):
         """
-        Performs Greedy Search to find the best sequence of moves in the play tree based on heuristic only.
-        Only considers paths that result in a victory.
-        :param play_tree: The root of the play tree.
-        :return: A list of (row, col) tuples representing the sequence of best moves leading to victory, or [] if no such path exists.
+        Performs Greedy Search to find the best sequence of moves based on diamonds collected as a heuristic.
+
+        :param game_controller: The GameController representing the current game state.
+        :return: A dictionary containing the following statistics:
+            - 'plan': The game plan (list of (row, col) tuples) leading to a victory, or None if no path to victory is found.
+            - 'nodes_explored': The number of nodes explored during the search.
+            - 'execution_time': The time required for the execution of the search.
+            - 'memory_usage': The peak memory usage during the search.
+            - 'path_length': The number of moves required to win (length of the path), or None if no path is found.
+            - 'success': A boolean indicating whether a game plan was found (True) or not (False).
         """
-        expanded_nodes = 0
+
+        tracemalloc.start()
         start_time = time.time()
+        expanded_nodes = 0
         priority_queue = []
-        root = play_tree.root
-        heapq.heappush(priority_queue, (-root.heuristic, id(root), root, []))  # (heuristic, unique id, node, path)
-        best_path = []
-        best_heuristic_score = float('-inf') #renamed variable for clarity.
+        visited_boards = set()  # Store visited board states to avoid cycles
+
+        initial_diamonds = game_controller.calculate_total_diamonds_in_game()
+        heapq.heappush(priority_queue, (initial_diamonds, id(game_controller), game_controller, []))  # (heuristic, unique_id, game_controller, path)
+
+        plan = None
+        path_length = None
+        success = False
+        memory_usage = 0
+        final_score = None
+
         while priority_queue:
-            _, _, node, path = heapq.heappop(priority_queue)
+            heuristic, _, current_controller, path = heapq.heappop(priority_queue)
             expanded_nodes += 1
-            game_score = node.game_controller.score
-            if node.game_status == "victory":  # Only consider paths that lead to a win
-                score = node.heuristic  # Greedy Search: f(n) = h(n)
-                if score > best_heuristic_score:
-                    best_heuristic_score = score
-                    best_path = path + [node.position]  # Store the path to the best victory node
-            for child in node.children:
-                heapq.heappush(priority_queue, (-child.heuristic, id(child), child, path + [child.position]))
+
+            # Convert board to tuple for loop detection
+            board_tuple = tuple(tuple(row) for row in current_controller.game_board.board)
+            if board_tuple in visited_boards:
+                continue
+            visited_boards.add(board_tuple)
+
+            # Check for victory
+            current_diamonds = current_controller.calculate_total_diamonds_in_game()
+            if current_diamonds == 0:
+                plan = path
+                path_length = len(path)
+                success = True
+                final_score = current_controller.score
+                break
+
+            # Check if no more pieces can be placed
+            if current_controller.is_defeat():
+                continue
+
+            # Generate potential actions
+            piece_name, piece = current_controller.piece_sequence.peek_next_piece()
+
+            for r in range(current_controller.game_board.rows - len(piece) + 1):
+                for c in range(current_controller.game_board.cols - len(piece[0]) + 1):
+                    if current_controller.can_place_piece(piece, r, c):
+                        # Create a copy of the game_controller for each step
+                        new_controller = copy.deepcopy(current_controller)
+
+                        new_controller.play(r, c)
+
+                        # Calculate new heuristic value (number of diamonds after the move)
+                        new_diamonds = new_controller.calculate_total_diamonds_in_game()
+
+                        new_path = path + [(r, c)]  # Add the selected node to path
+
+                        heapq.heappush(priority_queue, (new_diamonds, id(new_controller), new_controller, new_path))
+
         end_time = time.time()
         execution_time = end_time - start_time
-        if best_path:
-            logger.info(f"Greedy Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Heuristic Score: {best_heuristic_score}, Length: {len(best_path)}")
+
+        # Find the peak memory usage on the game
+        _, peak = tracemalloc.get_traced_memory()
+        memory_usage = peak / 1024
+
+        tracemalloc.stop()
+
+        if success:
+            logger.info(
+                f"Greedy - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(plan)}, Memory Used: {memory_usage:.2f} KB"
+            )
         else:
-            logger.info(f"Greedy Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, No solution found.")
-        return best_path    
+            logger.info(
+                f"Greedy - No victory found. Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Memory Used: {memory_usage:.2f} KB"
+            )
+
+        statistics = {
+            'plan': plan,
+            'nodes_explored': expanded_nodes,
+            'execution_time': execution_time,
+            'memory_usage': memory_usage,
+            'path_length': path_length,
+            'success': success,
+            'final_score': final_score
+        }
+        return statistics
     
         
     @staticmethod
