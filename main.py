@@ -5,7 +5,6 @@ from piece import PieceSequence, piece_definitions
 from game_controller import GameController
 from game_gui import GameGUI
 from play_tree import PlayTree
-from search_algorithms_old import SearchAlgorithms
 
 from logger_config import setup_logger 
 
@@ -37,6 +36,8 @@ def run_game_headless():
     logger.info(f"BFS Game Plan: {game_plan}")
     game_plan = SearchAlgorithms.iterative_deepening_search(play_tree, args.sequence_length)
     logger.info(f"IDS Game Plan: {game_plan}")
+    game_plan = SearchAlgorithms.uniform_cost_search(play_tree)
+    logger.info(f"UCS Game Plan: {game_plan}")
 
 
 if __name__ == '__main__':

@@ -120,6 +120,7 @@ class GameGUI:
         self.a_star_button = None
         self.a_greedy_button = None
         self.ids_button = None
+        self.ucs_button = None
         self.restart_button = None
 
         # Game board cells
@@ -430,6 +431,8 @@ class GameGUI:
         self.a_greedy_button.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)  # Use grid within this frame
         self.ids_button = tk.Button(self.plan_button_frame, text="IDS Plan", command=lambda: self.get_game_plan('IDS'), font=FONT_LARGE, **PLAN_BUTTON_STYLE)
         self.ids_button.grid(row=2, column=0, sticky="nsew", padx=2, pady=2)  # Use grid within this frame and span columns
+        self.ucs_button = tk.Button(self.plan_button_frame, text="UCS Plan", command=lambda: self.get_game_plan('UCS'), font=FONT_LARGE, **PLAN_BUTTON_STYLE) 
+        self.ucs_button.grid(row=2, column=1, sticky="nsew", padx=2, pady=2) # Use grid within this frame and span columns
 
 
     def initialize_status_label(self):
@@ -537,31 +540,44 @@ class GameGUI:
             return
 
         search_algorithm = {
-            'DFS': SearchAlgorithms.depth_first_search,
-            'BFS': SearchAlgorithms.breadth_first_search,
-            'A*': SearchAlgorithms.a_star_search,
-            'Greedy': SearchAlgorithms.greedy_search,
-            'IDS': SearchAlgorithms.iterative_deepening_search
-        }.get(algorithm)
+        'DFS': SearchAlgorithms.depth_first_search,
+        'BFS': SearchAlgorithms.breadth_first_search,
+        'A*': SearchAlgorithms.a_star_search,
+        'Greedy': SearchAlgorithms.greedy_search,
+        'IDS': SearchAlgorithms.iterative_deepening_search,
+        'UCS': SearchAlgorithms.uniform_cost_search
+    }.get(algorithm)
 
         if not search_algorithm:
             logger.error(f"Invalid algorithm: {algorithm}")
             return
 
-        statistics = search_algorithm(self.game)
-
-        if statistics['plan']:
-            self.game_plan = statistics['plan']
-            logger.info(f"{algorithm} Game Plan calculated: {self.game_plan}")
-            self.algorithm_statistics[algorithm] = statistics  # Overwrite if it exists
-            messagebox.showinfo("Plan calculated successfully", "The AI has calculated the game plan.")
-            self.update_statistics_frame()
+        if algorithm == 'IDS':
+            statistics = search_algorithm(self.game, int(self.sequence_entry.get())) # Pass sequence length for IDS
         else:
+            statistics = search_algorithm(self.game) # Pass only game_controller for other algorithms
+
+
+        if statistics: # Check if statistics is not None (to handle potential errors in algorithms)
+            if statistics['plan']:
+                self.game_plan = statistics['plan']
+                logger.info(f"{algorithm} Game Plan calculated: {self.game_plan}")
+                self.algorithm_statistics[algorithm] = statistics  # Overwrite if it exists
+                messagebox.showinfo("Plan calculated successfully", "The AI has calculated the game plan.")
+                self.update_statistics_frame()
+            else:
+                self.game_plan = None
+                logger.info(f"No {algorithm} Game Plan found.")
+                self.algorithm_statistics[algorithm] = None
+                messagebox.showinfo("Failed to calculate a game plan", "The AI could not calculate the game plan. The user can play manually")
+            self.update_ai_button_state()
+        else:
+            logger.error(f"Algorithm {algorithm} returned None statistics, possibly due to an error during execution.")
+            messagebox.showerror("Error", f"Algorithm {algorithm} failed to calculate a plan.")
             self.game_plan = None
-            logger.info(f"No {algorithm} Game Plan found.")
             self.algorithm_statistics[algorithm] = None
-            messagebox.showinfo("Failed to calculate a game plan", "The AI could not calculate the game plan. The user can play manually")
-        self.update_ai_button_state()
+            self.update_ai_button_state()
+            
 
     def update_statistics_frame(self):
         """
@@ -887,6 +903,7 @@ class GameGUI:
         self.a_star_button.config(state=tk.DISABLED)
         self.a_greedy_button.config(state=tk.DISABLED)
         self.ids_button.config(state=tk.DISABLED)
+        self.ucs_button.config(state=tk.DISABLED)
         # Disable the board interaction as well
         self.disable_board()
 
@@ -900,6 +917,7 @@ class GameGUI:
         self.a_star_button.config(state=tk.NORMAL)
         self.a_greedy_button.config(state=tk.NORMAL)
         self.ids_button.config(state=tk.NORMAL)
+        self.ucs_button.config(state=tk.NORMAL)
         # Enable board interaction
         self.enable_board()
 
