@@ -496,34 +496,21 @@ class SearchAlgorithms:
                         new_diamonds = new_controller.calculate_total_diamonds_in_game()
                         new_path = path + [(r, c)]
                         stack.append((new_controller, new_path, new_diamonds, depth + 1))
-            if node.game_status == "victory":
-                solution_depth = depth
-                end_time = time.time()
-                execution_time = end_time - start_time
-                cpu = psutil.cpu_percent(execution_time)
-                logger.info(
-                    f"Depth-Limited Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {game_score}, Solution depth: {solution_depth}, Length: {len(path + [node.position] if node.position else path)}, Depth limit: {depth_limit}"
-                )
-                return path + [node.position] if node.position else path # Return path to victory
-
-            if depth < depth_limit:
-                for child in node.children:
-                    new_path = path + [node.position] if node.position else path
-                    stack.append((child, new_path, depth + 1))
 
         end_time = time.time()
         execution_time = end_time - start_time
+        cpu = psutil.cpu_percent(execution_time)
         _, peak = tracemalloc.get_traced_memory()
         memory_usage = peak / 1024
         tracemalloc.stop()
 
         if success:
             logger.info(
-                f"DLS (Limit {depth_limit}) - Victory within limit! Time: {execution_time:.4f}s, Nodes: {expanded_nodes}, Depth: {solution_depth}, Memory: {memory_usage:.2f} KB"
+                f"DLS (Limit {depth_limit}) - Victory within limit! Time: {execution_time:.4f}s, Nodes: {expanded_nodes}, Depth: {solution_depth}, Memory: {memory_usage:.2f} KB, CPU Used: {cpu} "
             )
         else:
             logger.info(
-                f"DLS (Limit {depth_limit}) - No victory within limit. Time: {execution_time:.4f}s, Nodes: {expanded_nodes}, Memory: {memory_usage:.2f} KB"
+                f"DLS (Limit {depth_limit}) - No victory within limit. Time: {execution_time:.4f}s, Nodes: {expanded_nodes}, Memory: {memory_usage:.2f} KB, CPU Used: {cpu} "
             )
 
         statistics = {
@@ -535,6 +522,7 @@ class SearchAlgorithms:
             'success': success,
             'final_score': final_score,
             'solution_depth': solution_depth,
+            'cpu': cpu,       
             'depth_limit': depth_limit
         }
         return statistics
@@ -579,14 +567,15 @@ class SearchAlgorithms:
 
         end_time = time.time()
         execution_time = end_time - start_time # Total time for IDS (though cumulative_execution_time from DLS calls is more accurate for search time)
+        cpu = psutil.cpu_percent(execution_time)
 
         if final_success:
             logger.info(
-                f"IDS - Victory found! (Depth Limit: {depth_limit_reached}). Total Time: {cumulative_execution_time:.4f}s, Total Nodes: {total_expanded_nodes}, Path Length: {final_path_length}, Memory Used: {total_memory_usage:.2f} KB"
+                f"IDS - Victory found! (Depth Limit: {depth_limit_reached}). Total Time: {cumulative_execution_time:.4f}s, Total Nodes: {total_expanded_nodes}, Path Length: {final_path_length}, Memory Used: {total_memory_usage:.2f} KB, CPU Used: {cpu} "
             )
         else:
             logger.info(
-                f"IDS - No victory within max depth {max_depth}. Total Time: {cumulative_execution_time:.4f}s, Total Nodes: {total_expanded_nodes}, Memory Used: {total_memory_usage:.2f} KB"
+                f"IDS - No victory within max depth {max_depth}. Total Time: {cumulative_execution_time:.4f}s, Total Nodes: {total_expanded_nodes}, Memory Used: {total_memory_usage:.2f} KB, CPU Used: {cpu} "
             )
 
         statistics = {
@@ -598,6 +587,7 @@ class SearchAlgorithms:
             'success': final_success,
             'final_score': final_score,
             'depth_limit_reached': depth_limit_reached,
+            'cpu': cpu,       
             'max_depth': max_depth
         }
         return statistics
@@ -644,11 +634,12 @@ class SearchAlgorithms:
 
                 end_time = time.time()
                 execution_time = end_time - start_time
+                cpu = psutil.cpu_percent(execution_time)
                 _, peak = tracemalloc.get_traced_memory()
                 memory_usage = peak / 1024
 
                 logger.info(
-                    f"UCS - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(plan)}, Memory Used: {memory_usage:.2f} KB"
+                    f"UCS - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(plan)}, Memory Used: {memory_usage:.2f} KB, CPU Used: {cpu} "
                 )
                 break # Solution found, exit UCS
 
@@ -672,6 +663,7 @@ class SearchAlgorithms:
 
         end_time = time.time()
         execution_time = end_time - start_time
+        cpu = psutil.cpu_percent(execution_time)
         _, peak = tracemalloc.get_traced_memory()
         memory_usage = peak / 1024
         tracemalloc.stop()
@@ -679,11 +671,11 @@ class SearchAlgorithms:
 
         if success:
             logger.info(
-                f"UCS - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(plan)}, Memory Used: {memory_usage:.2f} KB"
+                f"UCS - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(plan)}, Memory Used: {memory_usage:.2f} KB, CPU Used: {cpu} "
             )
         else:
             logger.info(
-                f"UCS - No victory found. Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Memory Used: {memory_usage:.2f} KB"
+                f"UCS - No victory found. Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Memory Used: {memory_usage:.2f} KB, CPU Used: {cpu} "
             )
 
         statistics = {
@@ -693,6 +685,7 @@ class SearchAlgorithms:
             'memory_usage': memory_usage,
             'path_length': path_length,
             'success': success,
+            'cpu': cpu,       
             'final_score': final_score
         }
         return statistics
