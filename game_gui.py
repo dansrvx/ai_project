@@ -312,7 +312,7 @@ class GameGUI:
         self.algorithm_statistics_frame.grid_rowconfigure(2, weight=1)
         self.algorithm_statistics_frame.grid_rowconfigure(3, weight=1)
         self.algorithm_statistics_frame.grid_rowconfigure(4, weight=1)
-        columns = ["Algorithm", "Time (s)", "Memory (KB)", "Nodes", "Moves", "Score"]
+        columns = ["Algorithm", "Time (s)", "Memory (KB)", "Nodes", "Moves", "Score", "cpu"]
         for i in range(len(columns)):
             self.algorithm_statistics_frame.grid_columnconfigure(i, weight=1)
             header_label = tk.Label(self.algorithm_statistics_frame, text=columns[i], font=FONT_SMALL, borderwidth=1, relief="solid", padx=2, pady=2, bg="black", fg="white")
@@ -595,7 +595,8 @@ class GameGUI:
                         f"{statistics['memory_usage']:.2f}",
                         str(statistics['nodes_explored']),
                         str(statistics['path_length']),
-                        str(statistics['final_score'])
+                        str(statistics['final_score']),
+                        str(statistics['cpu'])
                     ]
 
                     for i, value in enumerate(data):

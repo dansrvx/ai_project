@@ -5,7 +5,7 @@ from piece import PieceSequence, piece_definitions
 from game_controller import GameController
 from game_gui import GameGUI
 from play_tree import PlayTree
-from search_algorithms_old import SearchAlgorithms
+from search_algorithms import SearchAlgorithms
 
 from logger_config import setup_logger 
 
@@ -25,25 +25,24 @@ def run_game_headless():
     game_board.initialize_board_state(fill_density=0.1, symmetric=True, edge_clear=True, sigma=1)
     piece_sequence = PieceSequence(piece_definitions, sequence_length=args.sequence_length)
     game_controller = GameController(game_board, piece_sequence)
-    play_tree = PlayTree(game_controller, args.sequence_length)
-    play_tree.print_tree()
-    game_plan = SearchAlgorithms.a_star_search(play_tree)
+
+    game_plan = SearchAlgorithms.a_star_search(game_controller)
     logger.info(f"A* Game Plan: {game_plan}")
-    game_plan = SearchAlgorithms.greedy_search(play_tree)
+    game_plan = SearchAlgorithms.greedy_search(game_controller)
     logger.info(f"Greedy Game Plan: {game_plan}")
-    game_plan = SearchAlgorithms.depth_first_search(play_tree)
+    game_plan = SearchAlgorithms.depth_first_search(game_controller)
     logger.info(f"DFS Game Plan: {game_plan}")
-    game_plan = SearchAlgorithms.breadth_first_search(play_tree)
+    game_plan = SearchAlgorithms.breadth_first_search(game_controller)
     logger.info(f"BFS Game Plan: {game_plan}")
-    game_plan = SearchAlgorithms.iterative_deepening_search(play_tree, args.sequence_length)
-    logger.info(f"IDS Game Plan: {game_plan}")
+    #game_plan = SearchAlgorithms.iterative_deepening_search(game_controller, args.sequence_length)
+    #logger.info(f"IDS Game Plan: {game_plan}")
 
 
 if __name__ == '__main__':
     #Enable this code to run all the algorithms at same time.
     #python main.py --headless --rows 10 --cols 10 --sequence 10
-    # run_game_headless()
-    # exit()
+    run_game_headless()
+    exit()
     
     #Basic
     root = tk.Tk()

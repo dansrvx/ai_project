@@ -3,6 +3,7 @@ import collections
 import tracemalloc
 import time
 import copy
+import psutil
 
 from logger_config import setup_logger
 
@@ -29,6 +30,7 @@ class SearchAlgorithms:
             - 'execution_time': The time required for the execution of the search.
             - 'memory_usage': The peak memory usage during the search.
             - 'path_length': The number of moves required to win (length of the path), or None if no path is found.
+            - 'cpu' : Return a float representing the current system-wide CPU utilization as a percentage.
             - 'success': A boolean indicating whether a game plan was found (True) or not (False).
         """
         tracemalloc.start()  # Start memory tracing
@@ -85,6 +87,7 @@ class SearchAlgorithms:
 
         end_time = time.time()
         execution_time = end_time - start_time
+        cpu = psutil.cpu_percent(execution_time)
         # Find the peak memory usage on the game
         _, peak = tracemalloc.get_traced_memory()
         memory_usage = peak / 1024
@@ -92,11 +95,11 @@ class SearchAlgorithms:
         tracemalloc.stop()  # Stop memory tracing
         if (success):
             logger.info(
-                f"DFS - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(plan)}, Memory Used: {memory_usage:.2f} KB"
+                f"DFS - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(plan)}, Memory Used: {memory_usage:.2f} KB, CPU Used: {cpu} "
             )
         else:
             logger.info(
-                f"DFS - No victory found. Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Memory Used: {memory_usage:.2f} KB"
+                f"DFS - No victory found. Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Memory Used: {memory_usage:.2f} KB, CPU Used: {cpu} "
             )
         statistics = {
             'plan': plan,
@@ -105,6 +108,7 @@ class SearchAlgorithms:
             'memory_usage': memory_usage,
             'path_length': path_length,
             'success': success,
+            'cpu': cpu,
             'final_score': final_score
         }
         return statistics
@@ -177,6 +181,7 @@ class SearchAlgorithms:
 
         end_time = time.time()
         execution_time = end_time - start_time
+        cpu = psutil.cpu_percent(execution_time)
         # Find the peak memory usage on the game
         _, peak = tracemalloc.get_traced_memory()
         memory_usage = peak / 1024
@@ -184,11 +189,11 @@ class SearchAlgorithms:
         tracemalloc.stop()  # Stop memory tracing
         if (success):
             logger.info(
-                f"BFS - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(plan)}, Memory Used: {memory_usage:.2f} KB"
+                f"BFS - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(plan)}, Memory Used: {memory_usage:.2f} KB, CPU Used: {cpu} "
             )
         else:
             logger.info(
-                f"BFS - No victory found. Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Memory Used: {memory_usage:.2f} KB"
+                f"BFS - No victory found. Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Memory Used: {memory_usage:.2f} KB, CPU Used: {cpu} "
             )
         statistics = {
             'plan': plan,
@@ -197,6 +202,7 @@ class SearchAlgorithms:
             'memory_usage': memory_usage,
             'path_length': path_length,
             'success': success,
+            'cpu': cpu,
             'final_score': final_score
         }
         return statistics
@@ -251,15 +257,28 @@ class SearchAlgorithms:
 
                 end_time = time.time()
                 execution_time = end_time - start_time
+                cpu = psutil.cpu_percent(execution_time)
 
                 # Find the peak memory usage on the game
                 _, peak = tracemalloc.get_traced_memory()
                 memory_usage = peak / 1024
-
+                
                 logger.info(
-                    f"A* - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(path)}, Memory Used: {memory_usage:.2f} KB"
+                    f"A* - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(path)}, Memory Used: {memory_usage:.2f} KB, CPU Used: {cpu} "
                 )
-                break  # Stop the loop after the plan is found.
+
+                statistics = {
+                    'plan': plan,
+                    'nodes_explored': expanded_nodes,
+                    'execution_time': execution_time,
+                    'memory_usage': memory_usage,
+                    'path_length': path_length,
+                    'success': success,
+                    'cpu': cpu,            
+                    'final_score': final_score
+                }
+                return statistics
+                #break  # Stop the loop after the plan is found.
 
             # No possible moves to create
             if current_controller.is_defeat():
@@ -290,6 +309,7 @@ class SearchAlgorithms:
 
         end_time = time.time()
         execution_time = end_time - start_time
+        cpu = psutil.cpu_percent(execution_time)
         # Find the peak memory usage on the game
         _, peak = tracemalloc.get_traced_memory()
         memory_usage = peak / 1024
@@ -297,11 +317,11 @@ class SearchAlgorithms:
         tracemalloc.stop()  # Stop memory tracing
         if (success):
             logger.info(
-                f"A* - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(plan)}, Memory Used: {memory_usage:.2f} KB"
+                f"A* - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(plan)}, Memory Used: {memory_usage:.2f} KB, CPU Used: {cpu} "
             )
         else:
             logger.info(
-                f"A* - No victory found. Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Memory Used: {memory_usage:.2f} KB"
+                f"A* - No victory found. Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Memory Used: {memory_usage:.2f} KB, CPU Used: {cpu} "
             )
 
         statistics = {
@@ -311,6 +331,7 @@ class SearchAlgorithms:
             'memory_usage': memory_usage,
             'path_length': path_length,
             'success': success,
+            'cpu': cpu,            
             'final_score': final_score
         }
         return statistics
@@ -388,6 +409,7 @@ class SearchAlgorithms:
 
         end_time = time.time()
         execution_time = end_time - start_time
+        cpu = psutil.cpu_percent(execution_time)
 
         # Find the peak memory usage on the game
         _, peak = tracemalloc.get_traced_memory()
@@ -397,11 +419,11 @@ class SearchAlgorithms:
 
         if success:
             logger.info(
-                f"Greedy - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(plan)}, Memory Used: {memory_usage:.2f} KB"
+                f"Greedy - Victory found! Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Path Length: {len(plan)}, Memory Used: {memory_usage:.2f} KB, CPU Used: {cpu} "
             )
         else:
             logger.info(
-                f"Greedy - No victory found. Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Memory Used: {memory_usage:.2f} KB"
+                f"Greedy - No victory found. Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Memory Used: {memory_usage:.2f} KB, CPU Used: {cpu} "
             )
 
         statistics = {
@@ -411,6 +433,7 @@ class SearchAlgorithms:
             'memory_usage': memory_usage,
             'path_length': path_length,
             'success': success,
+            'cpu': cpu,            
             'final_score': final_score
         }
         return statistics
@@ -446,6 +469,7 @@ class SearchAlgorithms:
                 solution_depth = depth
                 end_time = time.time()
                 execution_time = end_time - start_time
+                cpu = psutil.cpu_percent(execution_time)
                 logger.info(
                     f"Depth-Limited Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {game_score}, Solution depth: {solution_depth}, Length: {len(path + [node.position] if node.position else path)}, Depth limit: {depth_limit}"
                 )
@@ -458,6 +482,7 @@ class SearchAlgorithms:
 
         end_time = time.time()
         execution_time = end_time - start_time
+        cpu = psutil.cpu_percent(execution_time)
         logger.info(
                 f"Depth-Limited Search - Running time: {execution_time:.4f}s, Expanded nodes: {expanded_nodes}, Score: {game_score}, Solution depth: {solution_depth}, Length: None, Depth limit: {depth_limit}"
         )
@@ -481,12 +506,14 @@ class SearchAlgorithms:
             if result:
                 end_time = time.time()
                 execution_time = end_time - start_time
+                cpu = psutil.cpu_percent(execution_time)
                 logger.info(
                     f"Iterative Deepening Search - Running time: {execution_time:.4f}s"
                 )
                 return result # Return the path if found at the current depth limit
             end_time = time.time()
             execution_time = end_time - start_time
+            cpu = psutil.cpu_percent(execution_time)
             logger.info(
                     f"Iterative Deepening Search - Running time: {execution_time:.4f}s"
             )
