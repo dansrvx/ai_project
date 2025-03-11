@@ -34,8 +34,10 @@ def run_game_headless():
     logger.info(f"DFS Game Plan: {game_plan}")
     game_plan = SearchAlgorithms.breadth_first_search(game_controller)
     logger.info(f"BFS Game Plan: {game_plan}")
-    #game_plan = SearchAlgorithms.iterative_deepening_search(game_controller, args.sequence_length)
-    #logger.info(f"IDS Game Plan: {game_plan}")
+    game_plan = SearchAlgorithms.iterative_deepening_search(game_controller, args.sequence_length)
+    logger.info(f"IDS Game Plan: {game_plan}")
+    game_plan = SearchAlgorithms.uniform_cost_search(game_controller)
+    logger.info(f"UCS Game Plan: {game_plan}")
 
 
 if __name__ == '__main__':
