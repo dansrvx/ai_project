@@ -20,7 +20,7 @@ class GameBoard:
         self.cols = cols  # Number of columns in the board
         self.board = [[0 for _ in range(cols)] for _ in range(rows)]  # Initialize the board with all cells set to 0
 
-    def initialize_board_state(self, fill_density=0.3, symmetric=False, edge_clear=True, sigma=2, diamond_rate=20):
+    def initialize_board_state(self, fill_density=0.3, symmetric=False, edge_clear=True, sigma=2, diamond_rate=0.2):
         """
         Initializes the board state with parameters to control the initial fill density,
         symmetry, edge clearance, and places diamonds on the board based on diamond_rate.
@@ -30,7 +30,7 @@ class GameBoard:
             symmetric (bool): If True, the board will be symmetric along the vertical axis.
             edge_clear (bool): If True, ensures that no border cells (edges of the board) are filled.
             sigma (float): The sigma value for the Gaussian filter (not used in this function, but could be used for clustering).
-            diamond_rate (int): The rate of diamond appearance, affecting the probability of placing a diamond.
+            diamond_rate (float): The rate of diamond appearance, affecting the probability of placing a diamond.
         """
         # Generate a random noise matrix for board initialization
         noise = np.random.rand(self.rows, self.cols)
@@ -61,7 +61,7 @@ class GameBoard:
         # Place diamonds on cells with value 1 based on the diamond_rate
         for row in range(1, self.rows - 1):  # Avoid edges
             for col in range(1, self.cols - 1):  # Avoid edges
-                if self.board[row][col] == 1 and np.random.randint(0, 100) < diamond_rate:
+                if self.board[row][col] == 1 and np.random.randint(0, 1) < diamond_rate:
                     self.board[row][col] = 2  # Place a diamond (value 2) in the cell
 
     def get_copy_with_new_board(self, new_board):

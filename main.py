@@ -1,5 +1,7 @@
 import tkinter as tk
 import argparse
+import time  # Import the time module
+
 from game_board import GameBoard
 from piece import PieceSequence, piece_definitions
 from game_controller import GameController
@@ -7,9 +9,9 @@ from game_gui import GameGUI
 from play_tree import PlayTree
 from search_algorithms import SearchAlgorithms
 
-from logger_config import setup_logger 
+from logger_config import setup_logger
 
-logger = setup_logger() 
+logger = setup_logger()
 
 def run_game_headless():
     parser = argparse.ArgumentParser(description="Block Placement Game")
@@ -17,12 +19,14 @@ def run_game_headless():
     parser.add_argument('--rows', type=int, default=5, help="Number of rows")
     parser.add_argument('--cols', type=int, default=5, help="Number of columns")
     parser.add_argument('--sequence_length', type=int, default=5, help="Sequence length")
-    args = parser.parse_args() 
+    parser.add_argument('--fill_density', type=float, default=0.1, help="Initial board fill density (0.0 to 1.0)")
+    parser.add_argument('--diamond_rate', type=float, default=0.2, help="Diamond appearance rate (0 to 1)")
+    args = parser.parse_args()
 
-    """Run the game in headless mode."""
-    logger.info(f"Starting headless game with Board {args.rows} x {args.cols}. Sequence: {args.sequence_length}.")
+    """Run the game in headless mode with configurable fill density, diamond rate and timeout."""
+    logger.info(f"Starting headless game with Board {args.rows} x {args.cols}. Sequence: {args.sequence_length}, Fill Density: {args.fill_density}, Diamond Rate: {args.diamond_rate}.")
     game_board = GameBoard(args.rows, args.cols)
-    game_board.initialize_board_state(fill_density=0.1, symmetric=True, edge_clear=True, sigma=1)
+    game_board.initialize_board_state(fill_density=args.fill_density, symmetric=True, edge_clear=True, sigma=1, diamond_rate=args.diamond_rate)
     piece_sequence = PieceSequence(piece_definitions, sequence_length=args.sequence_length)
     game_controller = GameController(game_board, piece_sequence)
 
@@ -41,12 +45,12 @@ def run_game_headless():
 
 
 if __name__ == '__main__':
-    #Enable this code to run all the algorithms at same time.
-    #python main.py --headless --rows 10 --cols 10 --sequence 10
+    #Enable this code to run all the algorithms at same time with timeout.
+    #python main.py --headless --rows 10 --cols 10 --sequence_length 10 --fill_density 0.3 --diamond_rate 0.3
     run_game_headless()
     exit()
-    
-    #Basic
-    root = tk.Tk()
-    gui = GameGUI(root)
-    root.mainloop()
+
+    #Basic GUI execution
+    #root = tk.Tk()
+    #gui = GameGUI(root)
+    #root.mainloop()

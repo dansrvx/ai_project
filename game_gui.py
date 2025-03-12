@@ -465,7 +465,7 @@ class GameGUI:
             rows = int(self.row_entry.get())
             cols = int(self.col_entry.get())
             fill_density = self.density_slider.get() / 100.0  # Get value from slider (0-100) and convert to 0.0-1.0
-            diamond_rate = self.diamond_slider.get()
+            diamond_rate = self.diamond_slider.get() / 100.0  # Get value from slider (0-100) and convert to 0.0-1.0
             sequence_length = int(self.sequence_entry.get())
             symmetric = self.symmetric_var.get()
         except ValueError:
@@ -476,7 +476,7 @@ class GameGUI:
         if not (0 < rows <= MAX_BOARD_SIZE and 0 < cols <= MAX_BOARD_SIZE):
             messagebox.showerror("Error", "Board dimensions must be between 1 and " + str(MAX_BOARD_SIZE) + ".")
             return
-        if not (0 <= fill_density <= 1 and 0 <= diamond_rate <= 100):
+        if not (0 <= fill_density <= 1 and 0 <= diamond_rate <= 1):
             messagebox.showerror("Error", "Fill Density must be between 0 and 1, and Diamond Rate between 0 and 100.")
             return
         if not (0 < sequence_length <= MAX_SEQUENCE):
