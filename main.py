@@ -6,7 +6,6 @@ from game_board import GameBoard
 from piece import PieceSequence, piece_definitions
 from game_controller import GameController
 from game_gui import GameGUI
-from play_tree import PlayTree
 from search_algorithms import SearchAlgorithms
 
 from logger_config import setup_logger
@@ -51,6 +50,6 @@ if __name__ == '__main__':
     exit()
 
     #Basic GUI execution
-    #root = tk.Tk()
-    #gui = GameGUI(root)
-    #root.mainloop()
+    # root = tk.Tk()
+    # gui = GameGUI(root)
+    # root.mainloop()

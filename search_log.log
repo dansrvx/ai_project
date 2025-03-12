@@ -148,3 +148,204 @@
 2025-03-12 16:41:19,313 - INFO - IDS Game Plan: {'plan': [(4, 2), (0, 3), (5, 1), (0, 0), (2, 1), (0, 1), (3, 2), (4, 4), (0, 3), (1, 3)], 'nodes_explored': 42113, 'execution_time': 23.236016750335693, 'memory_usage': 11988.90625, 'path_length': 10, 'success': True, 'final_score': 240, 'depth_limit_reached': 10, 'cpu': 0.3, 'max_depth': 10}
 2025-03-12 16:41:53,825 - INFO - UCS - Victory found! Running time: 17.1595s, Expanded nodes: 16409, Path Length: 10, Memory Used: 112871.00 KB, CPU Used: 0.3 
 2025-03-12 16:41:54,183 - INFO - UCS Game Plan: {'plan': [(0, 3), (4, 4), (1, 2), (0, 3), (4, 0), (4, 3), (1, 5), (4, 2), (0, 1), (3, 4)], 'nodes_explored': 16409, 'execution_time': 17.159526824951172, 'memory_usage': 112871.0, 'path_length': 10, 'success': True, 'cpu': 0.3, 'final_score': 240}
+2025-03-12 21:10:43,484 - INFO - Starting headless game with Board 5 x 5. Sequence: 5, Fill Density: 0.1, Diamond Rate: 0.2.
+2025-03-12 21:10:43,490 - INFO - A* - Victory found! Running time: 0.0000s, Expanded nodes: 1, Path Length: 0, Memory Used: 8.57 KB, CPU Used: 0.0 %, Score: 0
+2025-03-12 21:10:43,490 - INFO - A* Game Plan: {'plan': [], 'nodes_explored': 1, 'execution_time': 2.9325485229492188e-05, 'memory_usage': 8.5703125, 'path_length': 0, 'success': True, 'cpu': 0.0, 'final_score': 0}
+2025-03-12 21:10:43,491 - INFO - Greedy - Victory found! Running time: 0.0000s, Expanded nodes: 1, Path Length: 0, Memory Used: 9.45 KB, CPU Used: 0.0 %, Score: 0
+2025-03-12 21:10:43,491 - INFO - Greedy Game Plan: {'plan': [], 'nodes_explored': 1, 'execution_time': 1.8596649169921875e-05, 'memory_usage': 9.4453125, 'path_length': 0, 'success': True, 'cpu': 0.0, 'final_score': 0}
+2025-03-12 21:10:43,502 - INFO - DFS - Victory found! Running time: 0.0051s, Expanded nodes: 1, Path Length: 0, Memory Used: 109.61 KB, CPU Used: 0.0 %, Score: 0
+2025-03-12 21:10:43,502 - INFO - DFS Game Plan: {'plan': [], 'nodes_explored': 1, 'execution_time': 0.005124807357788086, 'memory_usage': 109.609375, 'path_length': 0, 'success': True, 'cpu': 0.0, 'final_score': 0}
+2025-03-12 21:10:43,512 - INFO - BFS - Victory found! Running time: 0.0048s, Expanded nodes: 1, Path Length: 0, Memory Used: 95.80 KB, CPU Used: 0.0 %, Score: 0
+2025-03-12 21:10:43,512 - INFO - BFS Game Plan: {'plan': [], 'nodes_explored': 1, 'execution_time': 0.004830598831176758, 'memory_usage': 95.8046875, 'path_length': 0, 'success': True, 'cpu': 0.0, 'final_score': 0}
+2025-03-12 21:10:43,513 - INFO - DLS (Limit 1) - Victory within limit! Time: 0.0000s, Nodes: 1, Depth: 0, Memory: 4.78 KB, CPU Used: 0.0 %, Score: 0
+2025-03-12 21:10:43,514 - INFO - IDS - Victory found! (Depth Limit: 1). Total Time: 0.0000s, Total Nodes: 1, Path Length: 0, Memory Used: 4.78 KB, CPU Used: 0.0 %, Score: 0
+2025-03-12 21:10:43,514 - INFO - IDS Game Plan: {'plan': [], 'nodes_explored': 1, 'execution_time': 1.5497207641601562e-05, 'memory_usage': 4.78125, 'path_length': 0, 'success': True, 'final_score': 0, 'depth_limit_reached': 1, 'cpu': 0.0, 'max_depth': 5}
+2025-03-12 21:10:43,515 - INFO - UCS - Victory found! Running time: 0.0000s, Expanded nodes: 1, Path Length: 0, Memory Used: 4.79 KB, CPU Used: 0.0 
+2025-03-12 21:10:43,515 - INFO - UCS Game Plan: {'plan': [], 'nodes_explored': 1, 'execution_time': 2.0503997802734375e-05, 'memory_usage': 4.7890625, 'path_length': 0, 'success': True, 'cpu': 0.0, 'final_score': 0}
+2025-03-12 21:15:21,105 - INFO - Score: 0
+2025-03-12 21:15:21,105 - INFO - Remaining Pieces: 5
+2025-03-12 21:15:21,105 - INFO - Total Diamonds: 6
+2025-03-12 21:15:21,105 - INFO - The player can keep playing
+2025-03-12 21:15:21,105 - INFO - Game initialized with rows=5, cols=5, fill_density=0.3, diamond_rate=0.2, sequence_length=5, symmetric=True
+2025-03-12 21:15:31,226 - INFO - DFS - Victory found! Running time: 0.0063s, Expanded nodes: 12, Path Length: 5, Memory Used: 106.25 KB, CPU Used: 0.0 %, Score: 90
+2025-03-12 21:15:31,227 - INFO - DFS Game Plan calculated: [(2, 2), (2, 0), (0, 3), (0, 0), (0, 0)]
+2025-03-12 21:15:41,582 - INFO - BFS - Victory found! Running time: 0.0500s, Expanded nodes: 46, Path Length: 5, Memory Used: 608.59 KB, CPU Used: 24.7 %, Score: 90
+2025-03-12 21:15:41,582 - INFO - BFS Game Plan calculated: [(0, 0), (2, 2), (0, 3), (0, 0), (0, 3)]
+2025-03-12 21:15:44,074 - INFO - A* - Victory found! Running time: 0.0499s, Expanded nodes: 130, Path Length: 5, Memory Used: 368.16 KB, CPU Used: 15.7 %, Score: 90
+2025-03-12 21:15:44,074 - INFO - A* Game Plan calculated: [(0, 0), (2, 2), (0, 3), (0, 0), (0, 3)]
+2025-03-12 21:15:45,684 - INFO - Greedy - Victory found! Running time: 0.0219s, Expanded nodes: 43, Path Length: 5, Memory Used: 368.16 KB, CPU Used: 10.9 %, Score: 90
+2025-03-12 21:15:45,684 - INFO - Greedy Game Plan calculated: [(0, 0), (2, 2), (0, 3), (0, 0), (2, 1)]
+2025-03-12 21:15:47,560 - INFO - DLS (Limit 1) - No victory within limit. Time: 0.0014s, Nodes: 4, Memory: 31.65 KB, CPU Used: 0.0 %, Score: 0
+2025-03-12 21:15:47,574 - INFO - DLS (Limit 2) - No victory within limit. Time: 0.0070s, Nodes: 18, Memory: 67.84 KB, CPU Used: 40.0 %, Score: 0
+2025-03-12 21:15:47,598 - INFO - DLS (Limit 3) - No victory within limit. Time: 0.0113s, Nodes: 28, Memory: 67.84 KB, CPU Used: 13.9 %, Score: 0
+2025-03-12 21:15:47,634 - INFO - DLS (Limit 4) - No victory within limit. Time: 0.0176s, Nodes: 45, Memory: 73.02 KB, CPU Used: 20.0 %, Score: 0
+2025-03-12 21:15:47,648 - INFO - DLS (Limit 5) - Victory within limit! Time: 0.0068s, Nodes: 12, Depth: 5, Memory: 89.70 KB, CPU Used: 0.0 %, Score: 90
+2025-03-12 21:15:47,741 - INFO - IDS - Victory found! (Depth Limit: 5). Total Time: 0.0441s, Total Nodes: 107, Path Length: 5, Memory Used: 89.70 KB, CPU Used: 11.3 %, Score: 90
+2025-03-12 21:15:47,741 - INFO - IDS Game Plan calculated: [(2, 2), (2, 0), (0, 3), (0, 0), (0, 0)]
+2025-03-12 21:15:56,525 - INFO - UCS - Victory found! Running time: 0.0499s, Expanded nodes: 50, Path Length: 5, Memory Used: 591.88 KB, CPU Used: 20.0 
+2025-03-12 21:15:56,525 - INFO - UCS Game Plan calculated: [(0, 0), (2, 2), (0, 3), (1, 2), (2, 4)]
+2025-03-12 21:16:01,478 - INFO - The player can keep playing
+2025-03-12 21:16:01,478 - INFO - Piece placed successfully.
+2025-03-12 21:16:01,488 - INFO - Score: 0
+2025-03-12 21:16:01,488 - INFO - Remaining Pieces: 4
+2025-03-12 21:16:01,488 - INFO - Total Diamonds: 6
+2025-03-12 21:16:01,488 - INFO - Board:
+1 0 0 0 0
+1 1 2 0 0
+1 2 0 2 0
+0 0 0 0 0
+0 0 0 0 0
+
+2025-03-12 21:16:01,488 - INFO - The player can keep playing
+2025-03-12 21:16:01,488 - INFO - AI played move (0, 0). Remaining game plan: [(2, 2), (0, 3), (1, 2), (2, 4)]
+2025-03-12 21:16:02,242 - INFO - The player can keep playing
+2025-03-12 21:16:02,243 - INFO - Piece placed successfully.
+2025-03-12 21:16:02,254 - INFO - Score: 0
+2025-03-12 21:16:02,254 - INFO - Remaining Pieces: 3
+2025-03-12 21:16:02,254 - INFO - Total Diamonds: 6
+2025-03-12 21:16:02,254 - INFO - Board:
+1 0 0 0 0
+1 1 2 0 0
+1 2 1 2 0
+0 0 1 0 0
+0 0 1 0 0
+
+2025-03-12 21:16:02,254 - INFO - The player can keep playing
+2025-03-12 21:16:02,254 - INFO - AI played move (2, 2). Remaining game plan: [(0, 3), (1, 2), (2, 4)]
+2025-03-12 21:16:03,277 - INFO - The player can keep playing
+2025-03-12 21:16:03,278 - INFO - Piece placed successfully.
+2025-03-12 21:16:03,289 - INFO - Score: 70
+2025-03-12 21:16:03,289 - INFO - Remaining Pieces: 2
+2025-03-12 21:16:03,289 - INFO - Total Diamonds: 1
+2025-03-12 21:16:03,289 - INFO - Board:
+1 0 0 0 1
+0 0 0 0 0
+0 0 0 0 0
+0 0 1 0 0
+0 0 1 0 0
+
+2025-03-12 21:16:03,289 - INFO - The player can keep playing
+2025-03-12 21:16:03,289 - INFO - AI played move (0, 3). Remaining game plan: [(1, 2), (2, 4)]
+2025-03-12 21:16:05,799 - INFO - The player can keep playing
+2025-03-12 21:16:05,799 - INFO - Piece placed successfully.
+2025-03-12 21:16:05,810 - INFO - Score: 70
+2025-03-12 21:16:05,810 - INFO - Remaining Pieces: 1
+2025-03-12 21:16:05,810 - INFO - Total Diamonds: 1
+2025-03-12 21:16:05,810 - INFO - Board:
+1 0 0 0 1
+0 0 0 1 1
+0 0 1 1 0
+0 0 1 0 0
+0 0 1 0 0
+
+2025-03-12 21:16:05,810 - INFO - The player can keep playing
+2025-03-12 21:16:05,810 - INFO - AI played move (1, 2). Remaining game plan: [(2, 4)]
+2025-03-12 21:16:07,017 - INFO - The player can keep playing
+2025-03-12 21:16:07,018 - INFO - Piece placed successfully.
+2025-03-12 21:16:07,028 - INFO - Score: 90
+2025-03-12 21:16:07,028 - INFO - Remaining Pieces: 0
+2025-03-12 21:16:07,028 - INFO - Total Diamonds: 0
+2025-03-12 21:16:07,028 - INFO - Board:
+1 0 0 0 0
+0 0 0 1 0
+0 0 1 1 0
+0 0 1 0 0
+0 0 1 0 0
+
+2025-03-12 21:16:08,613 - INFO - Congratulations! You collected all the diamonds. Victory!
+Score: 90
+2025-03-12 21:16:08,614 - INFO - AI played move (2, 4). Remaining game plan: []
+2025-03-12 21:17:12,712 - INFO - Score: 0
+2025-03-12 21:17:12,712 - INFO - Remaining Pieces: 5
+2025-03-12 21:17:12,712 - INFO - Total Diamonds: 5
+2025-03-12 21:17:12,712 - INFO - The player can keep playing
+2025-03-12 21:17:12,712 - INFO - Game initialized with rows=5, cols=5, fill_density=0.3, diamond_rate=0.2, sequence_length=5, symmetric=True
+2025-03-12 21:17:14,163 - INFO - DFS - Victory found! Running time: 0.0238s, Expanded nodes: 48, Path Length: 5, Memory Used: 186.55 KB, CPU Used: 40.0 %, Score: 90
+2025-03-12 21:17:14,163 - INFO - DFS Game Plan calculated: [(2, 3), (4, 0), (0, 1), (0, 1), (2, 2)]
+2025-03-12 21:17:16,998 - INFO - BFS - Victory found! Running time: 0.1329s, Expanded nodes: 176, Path Length: 4, Memory Used: 1200.09 KB, CPU Used: 21.8 %, Score: 80
+2025-03-12 21:17:16,998 - INFO - BFS Game Plan calculated: [(0, 0), (4, 2), (0, 1), (3, 0)]
+2025-03-12 21:17:22,358 - INFO - A* - Victory found! Running time: 0.2142s, Expanded nodes: 435, Path Length: 4, Memory Used: 1315.12 KB, CPU Used: 16.4 %, Score: 70
+2025-03-12 21:17:22,360 - INFO - A* Game Plan calculated: [(1, 3), (0, 1), (1, 0), (3, 0)]
+2025-03-12 21:17:24,573 - INFO - Greedy - Victory found! Running time: 0.0318s, Expanded nodes: 73, Path Length: 4, Memory Used: 1315.12 KB, CPU Used: 10.8 %, Score: 70
+2025-03-12 21:17:24,574 - INFO - Greedy Game Plan calculated: [(0, 2), (4, 1), (2, 0), (0, 0)]
+2025-03-12 21:17:26,196 - INFO - DLS (Limit 1) - No victory within limit. Time: 0.0031s, Nodes: 8, Memory: 58.65 KB, CPU Used: 60.0 %, Score: 0
+2025-03-12 21:17:26,238 - INFO - DLS (Limit 2) - No victory within limit. Time: 0.0202s, Nodes: 52, Memory: 106.86 KB, CPU Used: 4.8 %, Score: 0
+2025-03-12 21:17:26,351 - INFO - DLS (Limit 3) - No victory within limit. Time: 0.0565s, Nodes: 147, Memory: 126.37 KB, CPU Used: 7.4 %, Score: 0
+2025-03-12 21:17:26,386 - INFO - DLS (Limit 4) - Victory within limit! Time: 0.0169s, Nodes: 36, Depth: 4, Memory: 126.70 KB, CPU Used: 17.2 %, Score: 70
+2025-03-12 21:17:26,584 - INFO - IDS - Victory found! (Depth Limit: 4). Total Time: 0.0967s, Total Nodes: 243, Path Length: 4, Memory Used: 126.70 KB, CPU Used: 20.9 %, Score: 70
+2025-03-12 21:17:26,584 - INFO - IDS Game Plan calculated: [(2, 3), (0, 1), (1, 0), (3, 0)]
+2025-03-12 21:17:28,393 - INFO - UCS - Victory found! Running time: 0.1393s, Expanded nodes: 173, Path Length: 4, Memory Used: 1254.55 KB, CPU Used: 8.8 
+2025-03-12 21:17:28,393 - INFO - UCS Game Plan calculated: [(1, 0), (0, 2), (1, 2), (3, 2)]
+2025-03-12 21:17:30,272 - INFO - The player can keep playing
+2025-03-12 21:17:30,272 - INFO - Piece placed successfully.
+2025-03-12 21:17:30,282 - INFO - Score: 0
+2025-03-12 21:17:30,283 - INFO - Remaining Pieces: 4
+2025-03-12 21:17:30,283 - INFO - Total Diamonds: 5
+2025-03-12 21:17:30,283 - INFO - Board:
+0 0 0 0 0
+1 0 0 0 0
+1 1 2 0 0
+0 1 2 0 0
+0 0 0 0 0
+
+2025-03-12 21:17:30,283 - INFO - The player can keep playing
+2025-03-12 21:17:30,283 - INFO - AI played move (1, 0). Remaining game plan: [(0, 2), (1, 2), (3, 2)]
+2025-03-12 21:17:30,856 - INFO - The player can keep playing
+2025-03-12 21:17:30,856 - INFO - Piece placed successfully.
+2025-03-12 21:17:30,867 - INFO - Score: 0
+2025-03-12 21:17:30,867 - INFO - Remaining Pieces: 3
+2025-03-12 21:17:30,867 - INFO - Total Diamonds: 5
+2025-03-12 21:17:30,867 - INFO - Board:
+0 0 2 1 1
+1 0 0 0 0
+1 1 2 0 0
+0 1 2 0 0
+0 0 0 0 0
+
+2025-03-12 21:17:30,867 - INFO - The player can keep playing
+2025-03-12 21:17:30,867 - INFO - AI played move (0, 2). Remaining game plan: [(1, 2), (3, 2)]
+2025-03-12 21:17:31,592 - INFO - The player can keep playing
+2025-03-12 21:17:31,592 - INFO - Piece placed successfully.
+2025-03-12 21:17:31,604 - INFO - Score: 0
+2025-03-12 21:17:31,604 - INFO - Remaining Pieces: 2
+2025-03-12 21:17:31,604 - INFO - Total Diamonds: 5
+2025-03-12 21:17:31,604 - INFO - Board:
+0 0 2 1 1
+1 0 1 2 1
+1 1 2 1 0
+0 1 2 0 0
+0 0 0 0 0
+
+2025-03-12 21:17:31,604 - INFO - The player can keep playing
+2025-03-12 21:17:31,604 - INFO - AI played move (1, 2). Remaining game plan: [(3, 2)]
+2025-03-12 21:17:32,175 - INFO - The player can keep playing
+2025-03-12 21:17:32,175 - INFO - Piece placed successfully.
+2025-03-12 21:17:32,186 - INFO - Score: 70
+2025-03-12 21:17:32,186 - INFO - Remaining Pieces: 1
+2025-03-12 21:17:32,186 - INFO - Total Diamonds: 0
+2025-03-12 21:17:32,186 - INFO - Board:
+0 0 0 0 1
+1 0 0 0 1
+1 1 0 0 0
+0 1 0 0 0
+0 0 0 0 1
+
+2025-03-12 21:17:33,574 - INFO - Congratulations! You collected all the diamonds. Victory!
+Score: 70
+2025-03-12 21:17:33,575 - INFO - AI played move (3, 2). Remaining game plan: []
+2025-03-12 21:17:56,286 - INFO - Starting headless game with Board 5 x 5. Sequence: 5, Fill Density: 0.1, Diamond Rate: 0.2.
+2025-03-12 21:17:56,791 - INFO - A* - Victory found! Running time: 0.2492s, Expanded nodes: 415, Path Length: 3, Memory Used: 2262.66 KB, CPU Used: 9.3 %, Score: 20
+2025-03-12 21:17:56,794 - INFO - A* Game Plan: {'plan': [(2, 0), (0, 1), (1, 3)], 'nodes_explored': 415, 'execution_time': 0.24920988082885742, 'memory_usage': 2262.6640625, 'path_length': 3, 'success': True, 'cpu': 9.3, 'final_score': 20}
+2025-03-12 21:17:56,844 - INFO - Greedy - Victory found! Running time: 0.0236s, Expanded nodes: 17, Path Length: 4, Memory Used: 2262.66 KB, CPU Used: 9.1 %, Score: 30
+2025-03-12 21:17:56,844 - INFO - Greedy Game Plan: {'plan': [(0, 2), (1, 1), (2, 0), (3, 2)], 'nodes_explored': 17, 'execution_time': 0.023645877838134766, 'memory_usage': 2262.6640625, 'path_length': 4, 'success': True, 'cpu': 9.1, 'final_score': 30}
+2025-03-12 21:17:56,876 - INFO - DFS - Victory found! Running time: 0.0156s, Expanded nodes: 10, Path Length: 4, Memory Used: 223.15 KB, CPU Used: 12.0 %, Score: 30
+2025-03-12 21:17:56,876 - INFO - DFS Game Plan: {'plan': [(3, 3), (2, 0), (1, 1), (2, 2)], 'nodes_explored': 10, 'execution_time': 0.015561580657958984, 'memory_usage': 223.1484375, 'path_length': 4, 'success': True, 'cpu': 12.0, 'final_score': 30}
+2025-03-12 21:17:57,225 - INFO - BFS - Victory found! Running time: 0.1730s, Expanded nodes: 130, Path Length: 3, Memory Used: 2114.87 KB, CPU Used: 18.1 %, Score: 20
+2025-03-12 21:17:57,226 - INFO - BFS Game Plan: {'plan': [(0, 0), (1, 2), (0, 3)], 'nodes_explored': 130, 'execution_time': 0.1730175018310547, 'memory_usage': 2114.8671875, 'path_length': 3, 'success': True, 'cpu': 18.1, 'final_score': 20}
+2025-03-12 21:17:57,240 - INFO - DLS (Limit 1) - No victory within limit. Time: 0.0068s, Nodes: 17, Memory: 124.16 KB, CPU Used: 0.0 %, Score: 0
+2025-03-12 21:17:57,337 - INFO - DLS (Limit 2) - No victory within limit. Time: 0.0481s, Nodes: 121, Memory: 175.16 KB, CPU Used: 20.9 %, Score: 0
+2025-03-12 21:17:57,366 - INFO - DLS (Limit 3) - Victory within limit! Time: 0.0140s, Nodes: 14, Depth: 3, Memory: 194.59 KB, CPU Used: 7.4 %, Score: 20
+2025-03-12 21:17:57,507 - INFO - IDS - Victory found! (Depth Limit: 3). Total Time: 0.0689s, Total Nodes: 152, Path Length: 3, Memory Used: 194.59 KB, CPU Used: 10.9 %, Score: 20
+2025-03-12 21:17:57,507 - INFO - IDS Game Plan: {'plan': [(3, 3), (1, 1), (2, 0)], 'nodes_explored': 152, 'execution_time': 0.06891369819641113, 'memory_usage': 194.5859375, 'path_length': 3, 'success': True, 'final_score': 20, 'depth_limit_reached': 3, 'cpu': 10.9, 'max_depth': 5}
+2025-03-12 21:17:57,861 - INFO - UCS - Victory found! Running time: 0.1755s, Expanded nodes: 133, Path Length: 3, Memory Used: 2084.82 KB, CPU Used: 33.8 
+2025-03-12 21:17:57,862 - INFO - UCS Game Plan: {'plan': [(2, 3), (0, 1), (1, 0)], 'nodes_explored': 133, 'execution_time': 0.1754627227783203, 'memory_usage': 2084.8203125, 'path_length': 3, 'success': True, 'cpu': 33.8, 'final_score': 20}

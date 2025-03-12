@@ -2,9 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 from uri_template import expand
-
 import game_controller as game_controller
-from play_tree import PlayTree
 from search_algorithms import SearchAlgorithms
 from logger_config import setup_logger, board_to_string
 from game_board import GameBoard
