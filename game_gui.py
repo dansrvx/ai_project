@@ -487,8 +487,6 @@ class GameGUI:
         piece_sequence = PieceSequence(piece_definitions, sequence_length=sequence_length)
         self.game = game_controller.GameController(game_board, piece_sequence)
 
-        # self.play_tree = self.calculate_tree()  # Recalculate the play tree
-
         # Enable game buttons and board interactions
         self.enable_game_buttons()
 
@@ -517,18 +515,6 @@ class GameGUI:
         self.symmetric_check.config(state=tk.DISABLED)
         self.accept_button.config(state=tk.DISABLED)
 
-    def calculate_tree(self):
-        """
-        Calculates the play tree for the current game state.
-        """
-        if self.game:
-            tree = PlayTree(self.game, len(self.game.piece_sequence.sequence))
-            tree.print_tree()
-            return tree
-        else:
-            logger.warning("Game not initialized. Cannot calculate play tree.")
-            return None  # Or handle the case where the game hasn't been initialized yet.
-
     def get_game_plan(self, algorithm):
         """
         Calculates and stores the game plan using the specified algorithm and stores statistics.
@@ -543,8 +529,7 @@ class GameGUI:
         'A*': SearchAlgorithms.a_star_search,
         'Greedy': SearchAlgorithms.greedy_search,
         'IDS': SearchAlgorithms.iterative_deepening_search,
-        'UCS': SearchAlgorithms.uniform_cost_search
-    }.get(algorithm)
+        'UCS': SearchAlgorithms.uniform_cost_search}.get(algorithm)
 
         if not search_algorithm:
             logger.error(f"Invalid algorithm: {algorithm}")
@@ -714,17 +699,6 @@ class GameGUI:
         """
         Updates the color of a specific cell based on its value and whether it was last placed.
         """
-        '''
-        if self.game:            
-            if (row, col) in self.last_placed_positions:
-                color = CELL_COLORS["last_placed"]
-            else:
-                # Access board from the game controller
-                board = self.game.game_board.board
-                cell_value = board[row][col]
-                color = CELL_COLORS.get(cell_value, "white")
-            self.cells[(row, col)].config(bg=color)
-        '''
         # Access board from the game controller
         board = self.game.game_board.board
         cell_value = board[row][col]

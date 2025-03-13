@@ -46,10 +46,10 @@ def run_game_headless():
 if __name__ == '__main__':
     #Enable this code to run all the algorithms at same time with timeout.
     #python main.py --headless --rows 10 --cols 10 --sequence_length 10 --fill_density 0.3 --diamond_rate 0.3
-    run_game_headless()
-    exit()
+    # run_game_headless()
+    # exit()
 
     #Basic GUI execution
-    # root = tk.Tk()
-    # gui = GameGUI(root)
-    # root.mainloop()
+    root = tk.Tk()
+    gui = GameGUI(root)
+    root.mainloop()

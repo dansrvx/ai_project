@@ -349,3 +349,150 @@ Score: 70
 2025-03-12 21:17:57,507 - INFO - IDS Game Plan: {'plan': [(3, 3), (1, 1), (2, 0)], 'nodes_explored': 152, 'execution_time': 0.06891369819641113, 'memory_usage': 194.5859375, 'path_length': 3, 'success': True, 'final_score': 20, 'depth_limit_reached': 3, 'cpu': 10.9, 'max_depth': 5}
 2025-03-12 21:17:57,861 - INFO - UCS - Victory found! Running time: 0.1755s, Expanded nodes: 133, Path Length: 3, Memory Used: 2084.82 KB, CPU Used: 33.8 
 2025-03-12 21:17:57,862 - INFO - UCS Game Plan: {'plan': [(2, 3), (0, 1), (1, 0)], 'nodes_explored': 133, 'execution_time': 0.1754627227783203, 'memory_usage': 2084.8203125, 'path_length': 3, 'success': True, 'cpu': 33.8, 'final_score': 20}
+2025-03-13 09:25:48,982 - INFO - Starting headless game with Board 5 x 5. Sequence: 5, Fill Density: 0.1, Diamond Rate: 0.2.
+2025-03-13 09:25:49,253 - INFO - A* - Victory found! Running time: 0.0901s, Expanded nodes: 94, Path Length: 3, Memory Used: 888.26 KB, CPU Used: 17.8 %, Score: 30
+2025-03-13 09:25:49,255 - INFO - A* Game Plan: {'plan': [(3, 1), (0, 0), (0, 2)], 'nodes_explored': 94, 'execution_time': 0.09009861946105957, 'memory_usage': 888.2578125, 'path_length': 3, 'success': True, 'cpu': 17.8, 'final_score': 30}
+2025-03-13 09:25:49,282 - INFO - Greedy - Victory found! Running time: 0.0128s, Expanded nodes: 15, Path Length: 5, Memory Used: 888.26 KB, CPU Used: 7.1 %, Score: 50
+2025-03-13 09:25:49,282 - INFO - Greedy Game Plan: {'plan': [(0, 1), (3, 1), (0, 1), (4, 0), (2, 1)], 'nodes_explored': 15, 'execution_time': 0.012836694717407227, 'memory_usage': 888.2578125, 'path_length': 5, 'success': True, 'cpu': 7.1, 'final_score': 50}
+2025-03-13 09:25:49,303 - INFO - DFS - Victory found! Running time: 0.0101s, Expanded nodes: 6, Path Length: 5, Memory Used: 144.55 KB, CPU Used: 0.0 %, Score: 40
+2025-03-13 09:25:49,304 - INFO - DFS Game Plan: {'plan': [(3, 2), (2, 0), (1, 2), (2, 2), (0, 0)], 'nodes_explored': 6, 'execution_time': 0.010146141052246094, 'memory_usage': 144.5546875, 'path_length': 5, 'success': True, 'cpu': 0.0, 'final_score': 40}
+2025-03-13 09:25:49,404 - INFO - BFS - Victory found! Running time: 0.0493s, Expanded nodes: 44, Path Length: 3, Memory Used: 398.64 KB, CPU Used: 18.4 %, Score: 30
+2025-03-13 09:25:49,404 - INFO - BFS Game Plan: {'plan': [(0, 0), (1, 2), (2, 0)], 'nodes_explored': 44, 'execution_time': 0.0493464469909668, 'memory_usage': 398.640625, 'path_length': 3, 'success': True, 'cpu': 18.4, 'final_score': 30}
+2025-03-13 09:25:49,413 - INFO - DLS (Limit 1) - No victory within limit. Time: 0.0037s, Nodes: 9, Memory: 59.73 KB, CPU Used: 0.0 %, Score: 0
+2025-03-13 09:25:49,453 - INFO - DLS (Limit 2) - No victory within limit. Time: 0.0198s, Nodes: 43, Memory: 93.15 KB, CPU Used: 9.1 %, Score: 0
+2025-03-13 09:25:49,469 - INFO - DLS (Limit 3) - Victory within limit! Time: 0.0076s, Nodes: 9, Depth: 3, Memory: 112.04 KB, CPU Used: 0.0 %, Score: 30
+2025-03-13 09:25:49,535 - INFO - IDS - Victory found! (Depth Limit: 3). Total Time: 0.0311s, Total Nodes: 61, Path Length: 3, Memory Used: 112.04 KB, CPU Used: 7.9 %, Score: 30
+2025-03-13 09:25:49,535 - INFO - IDS Game Plan: {'plan': [(3, 2), (1, 2), (2, 0)], 'nodes_explored': 61, 'execution_time': 0.031096458435058594, 'memory_usage': 112.0390625, 'path_length': 3, 'success': True, 'final_score': 30, 'depth_limit_reached': 3, 'cpu': 7.9, 'max_depth': 5}
+2025-03-13 09:25:49,628 - INFO - UCS - Victory found! Running time: 0.0463s, Expanded nodes: 49, Path Length: 3, Memory Used: 417.01 KB, CPU Used: 4.4 
+2025-03-13 09:25:49,628 - INFO - UCS Game Plan: {'plan': [(3, 1), (0, 0), (0, 2)], 'nodes_explored': 49, 'execution_time': 0.04625988006591797, 'memory_usage': 417.0078125, 'path_length': 3, 'success': True, 'cpu': 4.4, 'final_score': 30}
+2025-03-13 09:26:09,729 - INFO - Score: 0
+2025-03-13 09:26:09,729 - INFO - Remaining Pieces: 5
+2025-03-13 09:26:09,729 - INFO - Total Diamonds: 3
+2025-03-13 09:26:09,730 - INFO - The player can keep playing
+2025-03-13 09:26:09,730 - INFO - Game initialized with rows=5, cols=5, fill_density=0.3, diamond_rate=0.2, sequence_length=5, symmetric=True
+2025-03-13 09:26:11,435 - INFO - DFS - Victory found! Running time: 0.0117s, Expanded nodes: 16, Path Length: 4, Memory Used: 112.45 KB, CPU Used: 76.0 %, Score: 50
+2025-03-13 09:26:11,435 - INFO - DFS Game Plan calculated: [(3, 2), (1, 0), (1, 3), (0, 0)]
+2025-03-13 09:26:14,142 - INFO - The player can keep playing
+2025-03-13 09:26:14,142 - INFO - Piece placed successfully.
+2025-03-13 09:26:14,156 - INFO - Score: 0
+2025-03-13 09:26:14,156 - INFO - Remaining Pieces: 4
+2025-03-13 09:26:14,156 - INFO - Total Diamonds: 3
+2025-03-13 09:26:14,156 - INFO - Board:
+0 0 0 0 0
+0 0 2 0 0
+0 0 2 0 0
+0 0 0 1 0
+0 0 1 1 1
+
+2025-03-13 09:26:14,156 - INFO - The player can keep playing
+2025-03-13 09:26:14,156 - INFO - AI played move (3, 2). Remaining game plan: [(1, 0), (1, 3), (0, 0)]
+2025-03-13 09:26:14,590 - INFO - The player can keep playing
+2025-03-13 09:26:14,591 - INFO - Piece placed successfully.
+2025-03-13 09:26:14,605 - INFO - Score: 0
+2025-03-13 09:26:14,606 - INFO - Remaining Pieces: 3
+2025-03-13 09:26:14,606 - INFO - Total Diamonds: 3
+2025-03-13 09:26:14,606 - INFO - Board:
+0 0 0 0 0
+0 1 2 0 0
+1 1 2 0 0
+1 0 0 1 0
+0 0 1 1 1
+
+2025-03-13 09:26:14,606 - INFO - The player can keep playing
+2025-03-13 09:26:14,606 - INFO - AI played move (1, 0). Remaining game plan: [(1, 3), (0, 0)]
+2025-03-13 09:26:15,010 - INFO - The player can keep playing
+2025-03-13 09:26:15,010 - INFO - Piece placed successfully.
+2025-03-13 09:26:15,023 - INFO - Score: 20
+2025-03-13 09:26:15,024 - INFO - Remaining Pieces: 2
+2025-03-13 09:26:15,024 - INFO - Total Diamonds: 2
+2025-03-13 09:26:15,024 - INFO - Board:
+0 0 0 0 0
+0 1 2 1 2
+0 0 0 0 0
+1 0 0 1 0
+0 0 1 1 1
+
+2025-03-13 09:26:15,024 - INFO - The player can keep playing
+2025-03-13 09:26:15,024 - INFO - AI played move (1, 3). Remaining game plan: [(0, 0)]
+2025-03-13 09:26:15,481 - INFO - The player can keep playing
+2025-03-13 09:26:15,481 - INFO - Piece placed successfully.
+2025-03-13 09:26:15,496 - INFO - Score: 50
+2025-03-13 09:26:15,496 - INFO - Remaining Pieces: 1
+2025-03-13 09:26:15,496 - INFO - Total Diamonds: 0
+2025-03-13 09:26:15,496 - INFO - Board:
+1 1 1 0 0
+0 0 0 0 0
+0 0 0 0 0
+1 0 0 1 0
+0 0 1 1 1
+
+2025-03-13 09:26:16,695 - INFO - Congratulations! You collected all the diamonds. Victory!
+Score: 50
+2025-03-13 09:26:16,695 - INFO - AI played move (0, 0). Remaining game plan: []
+2025-03-13 09:26:17,802 - INFO - Game restarted.
+2025-03-13 09:26:18,926 - INFO - Score: 0
+2025-03-13 09:26:18,926 - INFO - Remaining Pieces: 5
+2025-03-13 09:26:18,926 - INFO - Total Diamonds: 3
+2025-03-13 09:26:18,926 - INFO - The player can keep playing
+2025-03-13 09:26:18,926 - INFO - Game initialized with rows=5, cols=5, fill_density=0.3, diamond_rate=0.2, sequence_length=5, symmetric=True
+2025-03-13 09:26:19,714 - INFO - Piece placed successfully.
+2025-03-13 09:26:19,731 - INFO - Score: 0
+2025-03-13 09:26:19,731 - INFO - Remaining Pieces: 4
+2025-03-13 09:26:19,731 - INFO - Total Diamonds: 3
+2025-03-13 09:26:19,731 - INFO - Board:
+0 1 0 0 0
+2 1 0 0 0
+1 0 0 0 0
+0 0 0 0 0
+0 0 0 0 0
+
+2025-03-13 09:26:19,731 - INFO - The player can keep playing
+2025-03-13 09:26:20,842 - INFO - Piece placed successfully.
+2025-03-13 09:26:20,856 - INFO - Score: 0
+2025-03-13 09:26:20,856 - INFO - Remaining Pieces: 3
+2025-03-13 09:26:20,856 - INFO - Total Diamonds: 3
+2025-03-13 09:26:20,856 - INFO - Board:
+0 1 1 0 0
+2 1 1 1 0
+1 0 1 0 0
+0 0 0 0 0
+0 0 0 0 0
+
+2025-03-13 09:26:20,856 - INFO - The player can keep playing
+2025-03-13 09:26:22,847 - INFO - Piece placed successfully.
+2025-03-13 09:26:22,864 - INFO - Score: 0
+2025-03-13 09:26:22,864 - INFO - Remaining Pieces: 2
+2025-03-13 09:26:22,864 - INFO - Total Diamonds: 3
+2025-03-13 09:26:22,864 - INFO - Board:
+0 1 1 0 0
+2 1 1 1 0
+1 1 1 0 0
+1 1 1 0 0
+0 0 0 0 0
+
+2025-03-13 09:26:22,865 - INFO - The player can keep playing
+2025-03-13 09:26:25,395 - INFO - Piece placed successfully.
+2025-03-13 09:26:25,412 - INFO - Score: 20
+2025-03-13 09:26:25,413 - INFO - Remaining Pieces: 1
+2025-03-13 09:26:25,413 - INFO - Total Diamonds: 2
+2025-03-13 09:26:25,413 - INFO - Board:
+0 1 1 0 0
+2 1 1 1 0
+1 1 1 2 0
+0 0 0 0 0
+0 0 0 1 0
+
+2025-03-13 09:26:25,413 - INFO - The player can keep playing
+2025-03-13 09:26:29,102 - INFO - Piece placed successfully.
+2025-03-13 09:26:29,116 - INFO - Score: 60
+2025-03-13 09:26:29,116 - INFO - Remaining Pieces: 0
+2025-03-13 09:26:29,116 - INFO - Total Diamonds: 0
+2025-03-13 09:26:29,116 - INFO - Board:
+0 1 1 0 1
+0 0 0 0 0
+0 0 0 0 0
+0 0 0 0 0
+0 0 0 1 0
+
+2025-03-13 09:26:30,251 - INFO - Congratulations! You collected all the diamonds. Victory!
+Score: 60

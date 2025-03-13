@@ -90,56 +90,6 @@ class GameController:
             for r in range(self.game_board.rows):
                 self.game_board.board[r][c] = 0
 
-    '''
-    def clear_completed_lines(self):
-        """
-        Clears completed rows and columns, updating the score based on the number of diamonds.
-        """
-        board = self.game_board.board
-        
-
-
-        rows_cleared, diamond_score_rows = self.clear_rows()
-        cols_cleared, diamond_score_cols = self.clear_cols()
-
-        total_lines_cleared = rows_cleared + cols_cleared
-        total_diamond_score = diamond_score_rows + diamond_score_cols
-
-        self.score += (total_lines_cleared * 10) + total_diamond_score
-        self.update_total_diamonds() # Update total_diamonds after clearing lines
-        return total_lines_cleared
-    
-    
-    
-    def clear_rows(self):
-        """
-        Clears completed rows and calculates diamond-based score.
-        """
-        rows_to_clear = [r for r in range(self.game_board.rows) if
-                         all(cell in [1, 2] for cell in self.game_board.board[r])]
-        diamond_score = sum(self.game_board.board[r].count(2) * 10 for r in rows_to_clear)
-
-        for r in rows_to_clear:
-            self.game_board.board[r] = [0] * self.game_board.cols
-
-        return len(rows_to_clear), diamond_score
-
-    def clear_cols(self):
-        """
-        Clears completed columns and calculates diamond-based score.
-        """
-        cols_to_clear = [c for c in range(self.game_board.cols) if
-                         all(self.game_board.board[r][c] in [1, 2] for r in range(self.game_board.rows))]
-        diamond_score = sum(
-            1 for c in cols_to_clear for r in range(self.game_board.rows) if self.game_board.board[r][c] == 2) * 10
-
-        for c in cols_to_clear:
-            for r in range(self.game_board.rows):
-                self.game_board.board[r][c] = 0
-
-        return len(cols_to_clear), diamond_score
-    '''
-
     def is_game_over(self):
         """
         Determines if the game is over by checking victory or defeat conditions.
