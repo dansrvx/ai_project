@@ -112,6 +112,7 @@ class GameGUI:
         # --- UI Elements - Buttons ---
         self.accept_button = None
         self.manual_button = None
+        self.all_plans_button = None
         self.ai_button = None
         self.dfs_button = None
         self.bfs_button = None
@@ -311,7 +312,7 @@ class GameGUI:
         self.algorithm_statistics_frame.grid_rowconfigure(2, weight=1)
         self.algorithm_statistics_frame.grid_rowconfigure(3, weight=1)
         self.algorithm_statistics_frame.grid_rowconfigure(4, weight=1)
-        columns = ["Algorithm", "Time (s)", "Memory (KB)", "Nodes", "Moves", "Score", "cpu"]
+        columns = ["Algorithm", "Time (s)", "Memory (KB)", "Nodes", "Moves", "Score", "CPU"]
         for i in range(len(columns)):
             self.algorithm_statistics_frame.grid_columnconfigure(i, weight=1)
             header_label = tk.Label(self.algorithm_statistics_frame, text=columns[i], font=FONT_SMALL, borderwidth=1, relief="solid", padx=2, pady=2, bg="black", fg="white")
@@ -372,14 +373,15 @@ class GameGUI:
         """
         self.game_button_frame = tk.Frame(self.input_frame, borderwidth=5, relief=tk.GROOVE)
         self.game_button_frame.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
-        self.game_button_frame.grid_rowconfigure(0, weight=10)
+        self.game_button_frame.grid_rowconfigure(0, weight=1)
         self.game_button_frame.grid_rowconfigure(1, weight=1)
         self.game_button_frame.grid_rowconfigure(2, weight=1)
         self.game_button_frame.grid_columnconfigure(0, weight=1)
+        self.game_button_frame.grid_columnconfigure(1, weight=1)
         self.game_button_frame.grid_propagate(False)
 
         self.manual_play_frame = tk.Frame(self.game_button_frame, bd=2, relief=tk.FLAT)
-        self.manual_play_frame.grid(row=0, column=0, sticky="nsew", padx=0, pady=0)
+        self.manual_play_frame.grid(row=0, column=0, columnspan=2, sticky="nsew", padx=0, pady=0)
         self.manual_play_frame.grid_rowconfigure(0, weight=1)
         self.manual_play_frame.grid_columnconfigure(0, weight=1)
         self.manual_play_frame.grid_columnconfigure(1, weight=1)
@@ -388,22 +390,30 @@ class GameGUI:
         self.manual_play_frame.grid_columnconfigure(4, weight=1)
         self.manual_play_frame.grid_propagate(False)
 
-        tk.Label(self.manual_play_frame, text="Row:", font=FONT_MEDIUM).grid(row=0, column=0, sticky="nsew")
-        self.row_entry_play = tk.Entry(self.manual_play_frame, width=5, font=FONT_MEDIUM)
-        self.row_entry_play.grid(row=0, column=1, sticky="nsew", padx=5, pady=1)
+        # Adicione esta linha para definir uma altura mínima
+        self.manual_play_frame.configure(height=40)  # Ajuste a altura conforme necessário
 
-        tk.Label(self.manual_play_frame, text="Col:", font=FONT_MEDIUM).grid(row=0, column=2, sticky="nsew")
+
+        tk.Label(self.manual_play_frame, text="Row:", font=FONT_MEDIUM).grid(row=0, column=0, sticky="nsew", pady=5)
+        self.row_entry_play = tk.Entry(self.manual_play_frame, width=5, font=FONT_MEDIUM)
+        self.row_entry_play.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
+
+        tk.Label(self.manual_play_frame, text="Col:", font=FONT_MEDIUM).grid(row=0, column=2, sticky="nsew", pady=5)
         self.col_entry_play = tk.Entry(self.manual_play_frame, width=5, font=FONT_MEDIUM)
-        self.col_entry_play.grid(row=0, column=3, sticky="nsew", padx=5, pady=1)
+        self.col_entry_play.grid(row=0, column=3, sticky="nsew", padx=5, pady=5)
 
         self.manual_button = tk.Button(self.manual_play_frame, text="Play Manually", command=self.manual_play_gui, font=FONT_LARGE, **GAME_BUTTON_STYLE)
-        self.manual_button.grid(row=0, column=4, sticky="nsew", padx=5, pady=1)
+        self.manual_button.grid(row=0, column=4, sticky="nsew", padx=5, pady=5)
 
         self.ai_button = tk.Button(self.game_button_frame, text="Play AI", command=self.play_ai_turn, font=FONT_LARGE, state=tk.DISABLED, **GAME_BUTTON_STYLE)
-        self.ai_button.grid(row=1, column=0, sticky="nsew", padx=5, pady=1)
+        self.ai_button.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=5, pady=1) # Usar columnspan para centralizar
 
         self.restart_button = tk.Button(self.game_button_frame, text="Restart Game", command=self.restart_game, font=FONT_LARGE, **GAME_BUTTON_STYLE)
         self.restart_button.grid(row=2, column=0, sticky="nsew", padx=5, pady=1)
+
+        # Novo botão para executar todos os algoritmos
+        self.all_plans_button = tk.Button(self.game_button_frame, text="Run All Algorithms", command=self.build_all_plans, font=FONT_LARGE, **GAME_BUTTON_STYLE)
+        self.all_plans_button.grid(row=2, column=1, sticky="nsew", padx=5, pady=1)
 
     def initialize_plan_buttons(self):
         """
@@ -595,7 +605,7 @@ class GameGUI:
                         str(statistics['nodes_explored']),
                         str(statistics['path_length']),
                         str(statistics['final_score']),
-                        str(statistics['cpu'])
+                        str(statistics['CPU'])
                     ]
 
                     for i, value in enumerate(data):
@@ -870,6 +880,7 @@ class GameGUI:
         Disables the game buttons.
         """
         self.manual_button.config(state=tk.DISABLED)
+        self.all_plans_button.config(state=tk.DISABLED)
         self.ai_button.config(state=tk.DISABLED)
         self.dfs_button.config(state=tk.DISABLED)
         self.bfs_button.config(state=tk.DISABLED)
@@ -885,6 +896,7 @@ class GameGUI:
         Enables the game buttons.
         """
         self.manual_button.config(state=tk.NORMAL)
+        self.all_plans_button.config(state=tk.NORMAL)
         self.dfs_button.config(state=tk.NORMAL)
         self.bfs_button.config(state=tk.NORMAL)
         self.a_star_button.config(state=tk.NORMAL)
@@ -989,3 +1001,45 @@ class GameGUI:
 
         logger.info("Game restarted.")
 
+    def build_all_plans(self):
+        """
+        Calculates and stores in the logs the game plans and stores statistics.
+        """
+        if not self.game:
+            messagebox.showerror("Error", "Game not initialized. Please set game parameters first.")
+            return
+
+        algorithms = {
+            'DFS': SearchAlgorithms.depth_first_search,
+            'BFS': SearchAlgorithms.breadth_first_search,
+            'A*': SearchAlgorithms.a_star_search,
+            'Greedy': SearchAlgorithms.greedy_search,
+            'IDS': SearchAlgorithms.iterative_deepening_search,
+            'UCS': SearchAlgorithms.uniform_cost_search}
+
+
+        for algorithm, search_algorithm in algorithms.items():
+            try:
+                if algorithm == 'IDS':
+                    statistics = search_algorithm(self.game, int(self.sequence_entry.get()))  # Pass sequence length
+                else:
+                    statistics = search_algorithm(self.game)
+
+                if statistics:
+                    self.algorithm_statistics[algorithm] = statistics  # Store statistics
+                    if statistics.get('plan'):
+                        logger.info(f"{algorithm} Game Plan calculated: {statistics['plan']}")
+                    else:
+                        logger.info(f"No {algorithm} Game Plan found.")
+                else:
+                    logger.error(f"Algorithm {algorithm} returned None statistics, possibly due to an error during execution.")
+                    self.algorithm_statistics[algorithm] = None
+
+            except Exception as e:
+                logger.exception(f"Error occurred during execution of {algorithm}: {e}")  # Log exceptions
+                self.algorithm_statistics[algorithm] = None
+                messagebox.showerror("Error", f"Algorithm {algorithm} failed to execute. See logs for details.")
+
+        self.update_statistics_frame()  # Update the statistics display after all algorithms are run
+        self.update_ai_button_state()   # Update button states
+        messagebox.showinfo("All plans calculated", "AI has calculated game plans for all algorithms. Please check search_log.log")

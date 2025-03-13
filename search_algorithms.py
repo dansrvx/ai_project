@@ -30,7 +30,7 @@ class SearchAlgorithms:
             - 'execution_time': The time required for the execution of the search.
             - 'memory_usage': The peak memory usage during the search.
             - 'path_length': The number of moves required to win (length of the path), or None if no path is found.
-            - 'cpu' : Return a float representing the current system-wide CPU utilization as a percentage.
+            - 'CPU' : Return a float representing the current system-wide CPU utilization as a percentage.
             - 'success': A boolean indicating whether a game plan was found (True) or not (False).
         """
         tracemalloc.start()  # Start memory tracing
@@ -108,7 +108,7 @@ class SearchAlgorithms:
             'memory_usage': memory_usage,
             'path_length': path_length,
             'success': success,
-            'cpu': cpu,
+            'CPU': cpu,
             'final_score': final_score
         }
         return statistics
@@ -203,7 +203,7 @@ class SearchAlgorithms:
             'memory_usage': memory_usage,
             'path_length': path_length,
             'success': success,
-            'cpu': cpu,
+            'CPU': cpu,
             'final_score': final_score
         }
         return statistics
@@ -275,7 +275,7 @@ class SearchAlgorithms:
                     'memory_usage': memory_usage,
                     'path_length': path_length,
                     'success': success,
-                    'cpu': cpu,            
+                    'CPU': cpu,            
                     'final_score': final_score
                 }
                 return statistics
@@ -332,7 +332,7 @@ class SearchAlgorithms:
             'memory_usage': memory_usage,
             'path_length': path_length,
             'success': success,
-            'cpu': cpu,            
+            'CPU': cpu,            
             'final_score': final_score
         }
         return statistics
@@ -434,7 +434,7 @@ class SearchAlgorithms:
             'memory_usage': memory_usage,
             'path_length': path_length,
             'success': success,
-            'cpu': cpu,            
+            'CPU': cpu,            
             'final_score': final_score
         }
         return statistics
@@ -523,7 +523,7 @@ class SearchAlgorithms:
             'success': success,
             'final_score': final_score,
             'solution_depth': solution_depth,
-            'cpu': cpu,       
+            'CPU': cpu,       
             'depth_limit': depth_limit
         }
         return statistics
@@ -588,7 +588,7 @@ class SearchAlgorithms:
             'success': final_success,
             'final_score': final_score,
             'depth_limit_reached': depth_limit_reached,
-            'cpu': cpu,       
+            'CPU': cpu,       
             'max_depth': max_depth
         }
         return statistics
@@ -676,7 +676,7 @@ class SearchAlgorithms:
             'memory_usage': memory_usage,
             'path_length': path_length,
             'success': success,
-            'cpu': cpu,
+            'CPU': cpu,
             'final_score': final_score
         }
         return statistics
